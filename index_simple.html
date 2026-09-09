@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interfaz Alternativa - IoT Particle</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 15px;
+        }
+        
+        .section {
+            margin: 25px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid #0066cc;
+        }
+        
+        .section h2 {
+            color: #0066cc;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        .form-group {
+            margin: 15px 0;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label {
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        input, button {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #0066cc;
+            box-shadow: 0 0 5px #0066cc;
+        }
+        
+        button {
+            background: #0066cc;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #0052a3;
+        }
+        
+        .data-display {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .data-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .data-card h3 {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        
+        .data-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #0066cc;
+        }
+        
+        .data-unit {
+            font-size: 0.8em;
+            color: #999;
+        }
+        
+        .status {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .status.disconnected {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .status.connecting {
+            background: #fff3e0;
+            color: #e65100;
+        }
+        
+        .status.connected {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .table-data {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .table-data th, .table-data td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .table-data th {
+            background: #0066cc;
+            color: white;
+        }
+        
+        .table-data tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .button-group button {
+            flex: 1;
+        }
+        
+        .note {
+            background: #e3f2fd;
+            border-left: 4px solid #1976d2;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            color: #0d47a1;
+        }
+        
+        @media (max-width: 600px) {
+            .data-display {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Sistema IoT de Monitoreo - Interfaz Simple</h1>
+        
+        <!-- Sección de Conexión -->
+        <div class="section">
+            <h2>🔐 Conectarse a Particle Cloud</h2>
+            <div class="form-group">
+                <label>Email de Particle:</label>
+                <input type="email" id="email" placeholder="tu@email.com">
+            </div>
+            <div class="form-group">
+                <label>Contraseña:</label>
+                <input type="password" id="password" placeholder="Tu contraseña">
+            </div>
+            <div class="form-group">
+                <label>ID del Dispositivo:</label>
+                <input type="text" id="deviceId" placeholder="Ej: 25001d000847313037363132">
+            </div>
+            <button onclick="conectar()">🔌 Conectar</button>
+            <div id="status" class="status disconnected">Estado: Desconectado</div>
+        </div>
+        
+        <!-- Sección de Datos -->
+        <div class="section">
+            <h2>📡 Datos en Tiempo Real</h2>
+            <div class="data-display">
+                <div class="data-card">
+                    <h3>Temperatura</h3>
+                    <div class="data-value" id="tempValue">??</div>
+                    <div class="data-unit">°C</div>
+                </div>
+                <div class="data-card">
+                    <h3>Humedad</h3>
+                    <div class="data-value" id="humValue">??</div>
+                    <div class="data-unit">%</div>
+                </div>
+            </div>
+            <p style="text-align: center; color: #999; font-size: 0.9em;">
+                Última actualización: <span id="lastUpdate">--:--:--</span>
+            </p>
+        </div>
+        
+        <!-- Sección de Historial -->
+        <div class="section">
+            <h2>📈 Historial de Lecturas</h2>
+            <table class="table-data">
+                <thead>
+                    <tr>
+                        <th>Hora</th>
+                        <th>Temperatura (°C)</th>
+                        <th>Humedad (%)</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr>
+                        <td colspan="3" style="text-align: center; color: #999;">
+                            No hay datos aún
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Sección de Controles -->
+        <div class="section">
+            <h2>⚙️ Controles</h2>
+            <div class="button-group">
+                <button onclick="actualizarDatos()">🔄 Actualizar Ahora</button>
+                <button onclick="limpiarHistorial()">🗑️ Limpiar Historial</button>
+                <button onclick="descargarCSV()">💾 Descargar CSV</button>
+            </div>
+        </div>
+        
+        <!-- Notas de Ayuda -->
+        <div class="note">
+            <strong>ℹ️ Ayuda:</strong>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>Usa tu email y contraseña de Particle Cloud</li>
+                <li>El ID del dispositivo está en la consola de Particle</li>
+                <li>Los datos se actualizan automáticamente cada 60 segundos</li>
+                <li>Puedes descargar los datos en formato CSV</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/particle-api-js@10/dist/particle.min.js"></script>
+    <script>
+        let particle = new Particle();
+        let token = null;
+        let deviceId = null;
+        let isConnected = false;
+        let datosHistorico = [];
+        let intervaloActualizacion;
+
+        /**
+         * Conectar a Particle Cloud
+         */
+        function conectar() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const device = document.getElementById('deviceId').value;
+
+            if (!email || !password || !device) {
+                alert('Por favor completa todos los campos');
+                return;
+            }
+
+            actualizarEstado('Conectando...', 'connecting');
+
+            particle.login({ username: email, password: password })
+                .then(function (data) {
+                    token = data.body.access_token;
+                    deviceId = device;
+                    isConnected = true;
+                    actualizarEstado('Conectado ✓', 'connected');
+                    
+                    // Actualizar inmediatamente
+                    obtenerDatos();
+                    
+                    // Actualizar cada 60 segundos
+                    if (intervaloActualizacion) clearInterval(intervaloActualizacion);
+                    intervaloActualizacion = setInterval(obtenerDatos, 60000);
+                })
+                .catch(function (err) {
+                    console.error('Error:', err);
+                    actualizarEstado('Error de conexión ✗', 'disconnected');
+                    alert('No se pudo conectar. Verifica las credenciales.');
+                    isConnected = false;
+                });
+        }
+
+        /**
+         * Actualizar estado visual
+         */
+        function actualizarEstado(mensaje, clase) {
+            const status = document.getElementById('status');
+            status.textContent = 'Estado: ' + mensaje;
+            status.className = 'status ' + clase;
+        }
+
+        /**
+         * Obtener datos de Particle Cloud
+         */
+        function obtenerDatos() {
+            if (!isConnected || !token || !deviceId) return;
+
+            // Obtener temperatura
+            particle.getVariable({ deviceId: deviceId, name: 'TEMP', auth: token })
+                .then(function (data) {
+                    const temp = parseFloat(data.body.result).toFixed(2);
+                    document.getElementById('tempValue').textContent = temp;
+                })
+                .catch(function (err) {
+                    console.error('Error temperatura:', err);
+                });
+
+            // Obtener humedad
+            particle.getVariable({ deviceId: deviceId, name: 'HUM', auth: token })
+                .then(function (data) {
+                    const hum = parseFloat(data.body.result).toFixed(2);
+                    document.getElementById('humValue').textContent = hum;
+                })
+                .catch(function (err) {
+                    console.error('Error humedad:', err);
+                });
+
+            // Actualizar hora
+            const ahora = new Date();
+            const hora = ahora.toLocaleTimeString('es-ES');
+            document.getElementById('lastUpdate').textContent = hora;
+
+            // Guardar en historial
+            guardarEnHistorial(
+                hora,
+                document.getElementById('tempValue').textContent,
+                document.getElementById('humValue').textContent
+            );
+        }
+
+        /**
+         * Guardar datos en historial
+         */
+        function guardarEnHistorial(hora, temp, hum) {
+            const dato = { hora, temp, hum };
+            datosHistorico.unshift(dato); // Agregar al inicio
+            
+            // Limitar a últimas 50 lecturas
+            if (datosHistorico.length > 50) {
+                datosHistorico.pop();
+            }
+
+            // Actualizar tabla
+            actualizarTabla();
+        }
+
+        /**
+         * Actualizar tabla de historial
+         */
+        function actualizarTabla() {
+            const tbody = document.getElementById('tableBody');
+            
+            if (datosHistorico.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #999;">No hay datos</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = datosHistorico.map(dato => `
+                <tr>
+                    <td>${dato.hora}</td>
+                    <td>${dato.temp}</td>
+                    <td>${dato.hum}</td>
+                </tr>
+            `).join('');
+        }
+
+        /**
+         * Actualizar datos manualmente
+         */
+        function actualizarDatos() {
+            if (!isConnected) {
+                alert('Primero debes conectarte');
+                return;
+            }
+            obtenerDatos();
+            alert('Datos actualizados');
+        }
+
+        /**
+         * Limpiar historial
+         */
+        function limpiarHistorial() {
+            if (confirm('¿Borrar todo el historial?')) {
+                datosHistorico = [];
+                actualizarTabla();
+                alert('Historial borrado');
+            }
+        }
+
+        /**
+         * Descargar datos como CSV
+         */
+        function descargarCSV() {
+            if (datosHistorico.length === 0) {
+                alert('No hay datos para descargar');
+                return;
+            }
+
+            let csv = 'Hora,Temperatura (°C),Humedad (%)\n';
+            datosHistorico.forEach(dato => {
+                csv += `${dato.hora},${dato.temp},${dato.hum}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `datos_IoT_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Inicialización
+        console.log('Sistema IoT listo');
+    </script>
+</body>
+</html>

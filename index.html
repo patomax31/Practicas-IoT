@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoreo de Temperatura y Humedad - IoT Particle</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>
+                <i class="fa fa-cloud"></i> Sistema IoT de Monitoreo
+            </h1>
+            <p>Visualización de datos en tiempo real desde Particle Cloud</p>
+        </header>
+
+        <div class="status">
+            <div class="status-indicator" id="statusIndicator">
+                <i class="fa fa-circle"></i> Conectando...
+            </div>
+        </div>
+
+        <div class="sensor-container">
+            <div class="sensor-card temperatura">
+                <div class="sensor-icon">
+                    <i class="fa fa-thermometer"></i>
+                </div>
+                <div class="sensor-info">
+                    <h2>Temperatura</h2>
+                    <div class="sensor-value">
+                        <span id="Temperatura">???</span>
+                        <span class="unit">°C</span>
+                    </div>
+                    <p class="sensor-label">Medición actual</p>
+                </div>
+            </div>
+
+            <div class="sensor-card humedad">
+                <div class="sensor-icon">
+                    <i class="fa fa-tint"></i>
+                </div>
+                <div class="sensor-info">
+                    <h2>Humedad</h2>
+                    <div class="sensor-value">
+                        <span id="Humedad">???</span>
+                        <span class="unit">%</span>
+                    </div>
+                    <p class="sensor-label">Medición actual</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="charts-container">
+            <div class="chart-wrapper">
+                <h3>Gráfica de Temperatura (últimas 24 lecturas)</h3>
+                <canvas id="tempChart"></canvas>
+            </div>
+            <div class="chart-wrapper">
+                <h3>Gráfica de Humedad (últimas 24 lecturas)</h3>
+                <canvas id="humChart"></canvas>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h3>Información del Dispositivo</h3>
+            <p><strong>ID de Dispositivo:</strong> <span id="deviceId">No conectado</span></p>
+            <p><strong>Última actualización:</strong> <span id="lastUpdate">Nunca</span></p>
+            <p><strong>Frecuencia de actualización:</strong> Cada 60 segundos</p>
+        </div>
+
+        <div class="credentials">
+            <h4>Credenciales de Particle</h4>
+            <div class="cred-form">
+                <input type="email" id="username" placeholder="Email de Particle" value="">
+                <input type="password" id="password" placeholder="Contraseña">
+                <input type="text" id="deviceId_input" placeholder="ID del dispositivo">
+                <button onclick="connectToParticle()">Conectar</button>
+            </div>
+        </div>
+
+        <footer>
+            <p>Actividad 3: Uso de función de nube Particle.variable - IoT</p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/particle-api-js@10/dist/particle.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
