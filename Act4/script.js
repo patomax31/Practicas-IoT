@@ -5,29 +5,21 @@ var pins = ['D7', 'D6', 'D5', 'D4', 'D3', 'D2', 'D1', 'D0'];
 
 document.addEventListener('DOMContentLoaded', function () {
   var pinsControls = document.getElementById('pins-controls');
-  var breaker = document.getElementById('Breaker1');
-  var breakerState = document.getElementById('state1');
 
   pins.forEach(function (pin) {
     pinsControls.innerHTML +=
       '<div>' +
       '<label for="' + pin + '">' + pin + '</label>' +
-      '<select id="' + pin + '" data-pin="' + pin + '">' +
-      '<option value="0">OFF</option>' +
-      '<option value="1">ON</option>' +
-      '</select>' +
+      '<input type="range" id="' + pin + '" class="pin-slider"' +
+      ' data-pin="' + pin + '" min="0" max="1" step="1" value="0"' +
+      ' aria-label="Controlar ' + pin + '">' +
       '</div>';
   });
 
-  pinsControls.addEventListener('change', function (event) {
-    if (event.target.tagName !== 'SELECT') return;
+  pinsControls.addEventListener('input', function (event) {
+    if (event.target.tagName !== 'INPUT') return;
 
     sendLedState(event.target.dataset.pin, event.target.value);
-  });
-
-  breaker.addEventListener('input', function () {
-    breakerState.value = this.value;
-    sendLedState('D7', this.value);
   });
 });
 

@@ -43,7 +43,7 @@ img{
   position: absolute;
   z-index: 1;
   display: grid;
-  gap: 33px;
+  gap: 30px;
   margin-top: 330px;
   margin-left: 190px;
 }
@@ -54,9 +54,9 @@ img{
   color: white;
 }
 
-#pins-controls select {
-  background-color: rgb(65, 61, 94);
-  color: white;
+#pins-controls input[type="range"] {
+  width: 40px;
+  accent-color: rgb(65, 61, 94);
 }
 .pinout{
 position: absolute;
