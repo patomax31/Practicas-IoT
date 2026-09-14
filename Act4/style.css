@@ -11,3 +11,56 @@
   width:40px;
    transform: rotate(90deg);
 }
+
+.container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 800px;
+}
+img{
+  max-width: 100%;  /* Prevents the image from being wider than its container */
+  height: auto;     /* Maintains the original aspect ratio so it doesn't distort */
+  position: absolute;
+  width: "250";
+  height: "400";
+  margin: auto;
+  display: block;
+
+
+}
+
+.dropdown{
+  position: absolute;
+  padding-left: 30px;
+  margin-left: 220px;
+  margin-top: 325px;
+  background-color: rgb(65, 61, 94);
+  color:white;
+}
+
+#pins-controls {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  gap: 33px;
+  margin-top: 330px;
+  margin-left: 190px;
+}
+
+#pins-controls label {
+  display: inline-block;
+  width: 35px;
+  color: white;
+}
+
+#pins-controls select {
+  background-color: rgb(65, 61, 94);
+  color: white;
+}
+.pinout{
+position: absolute;
+  padding-left: 30px;
+  margin-left: 270px;
+  margin-top: 325px;
+}
