@@ -1,0 +1,138 @@
+<link rel="stylesheet" 
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/particle-api-js@8/dist/particle.min.js">
+</script>
+<script  src="https://use.fontawesome.com/releases/v5.15.2/js/all.js"   data-auto-a11y="true"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.0/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+
+<div id="photon-interactable">
+
+      <div class="container">
+            <img src="img/Proton_p20.png" alt="Proton p20"class="proton">
+
+            <div id="pins-controls"></div>
+      </div>
+</div>
+
+
+#Breaker1 {
+  height: 2px;
+  font-family: 'museo700';
+  margin-bottom: 0px;
+  position: absolute;
+  padding: .1em;
+  background: black;
+  color: yellow;
+   top:50px;
+  left:50px;
+  width:40px;
+   transform: rotate(90deg);
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 800px;
+}
+img{
+  max-width: 100%;  /* Prevents the image from being wider than its container */
+  height: auto;     /* Maintains the original aspect ratio so it doesn't distort */
+  position: absolute;
+  width: "250";
+  height: "400";
+  margin: auto;
+  display: block;
+
+
+}
+
+.dropdown{
+  position: absolute;
+  padding-left: 30px;
+  margin-left: 220px;
+  margin-top: 325px;
+  background-color: rgb(65, 61, 94);
+  color:white;
+}
+
+#pins-controls {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  gap: 30px;
+  margin-top: 330px;
+  margin-left: 190px;
+}
+
+#pins-controls label {
+  display: inline-block;
+  width: 35px;
+  color: white;
+}
+
+#pins-controls input[type="range"] {
+  width: 40px;
+  accent-color: rgb(65, 61, 94);
+}
+.pinout{
+position: absolute;
+  padding-left: 30px;
+  margin-left: 270px;
+  margin-top: 325px;
+}
+
+var particle = new Particle();
+var token = '612cfbc634dc3cdb979b7cc7b88a14e6627e0507';
+var deviceId = '29002b000b47313037363132';
+var pins = ['D7', 'D6', 'D5', 'D4', 'D3', 'D2', 'D1', 'D0'];
+
+document.addEventListener('DOMContentLoaded', function () {
+  var pinsControls = document.getElementById('pins-controls');
+
+  pins.forEach(function (pin) {
+    pinsControls.innerHTML +=
+      '<div>' +
+      '<label for="' + pin + '">' + pin + '</label>' +
+      '<input type="range" id="' + pin + '" class="pin-slider"' +
+      ' data-pin="' + pin + '" min="0" max="1" step="1" value="0"' +
+      ' aria-label="Controlar ' + pin + '">' +
+      '</div>';
+  });
+
+  pinsControls.addEventListener('input', function (event) {
+    if (event.target.tagName !== 'INPUT') return;
+
+    sendLedState(event.target.dataset.pin, event.target.value);
+  });
+});
+
+function sendLedState(pin, state) {
+  if (!token) {
+    console.error('Particle todavía no ha autenticado la sesión.');
+    return;
+  }
+
+  particle.callFunction({
+    deviceId: deviceId,
+    name: 'led',
+    argument: pin + ':' + (state === '1' ? '1' : '0'),
+    auth: token
+  }).then(function (response) {
+    console.log(pin + ' actualizado:', response.body);
+  }).catch(function (error) {
+    console.error('No se pudo actualizar ' + pin, error);
+  });
+}
+
+particle.login({
+  username: 'dgarcia70@ucol.mx',
+  password: '#Elmausegamer29'
+}).then(function (data) {
+  token = data.body.access_token;
+}).catch(function (error) {
+  console.error('No se pudo iniciar sesión en Particle.', error);
+});

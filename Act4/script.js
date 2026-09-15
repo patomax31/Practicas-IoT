@@ -39,6 +39,7 @@ function sendLedState(pin, state) {
   }).catch(function (error) {
     console.error('No se pudo actualizar ' + pin, error);
   });
+  console.log(pin, state)
 }
 
 particle.login({
