@@ -1,0 +1,38 @@
+<script src="https://kit.fontawesome.com/a076d05399.js"></script>
+
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/particle-api-js@8/dist/particle.min.js">
+</script>
+<script src="https://use.fontawesome.com/releases/v5.15.2/js/all.js" data-auto-a11y="true"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.0/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+<link rel="stylesheet" href="style_carlos.css">
+
+<main class="control-panel">
+      <header class="panel-header">
+            <p class="eyebrow">Control de dispositivo</p>
+            <h1>Temperatura objetivo</h1>
+            <p class="subtitle">Ajusta la temperatura maxima del sensor.</p>
+      </header>
+
+      <section class="temperature-control" aria-labelledby="temperature-label">
+            <div class="control-heading">
+                  <label id="temperature-label" for="Ktemp">Nivel de temperatura</label>
+                  <output for="Ktemp" id="KvaluesTemp">15</output>
+            </div>
+            <input type="range" min="15" max="40" step="1" value="15" class="slider" id="Ktemp">
+            <div class="range-labels" aria-hidden="true"><span>15 °C</span><span>40 °C</span></div>
+      </section>
+
+      <div class="reading" aria-live="polite">
+            <span class="reading-label">Lectura actual</span>
+            <strong id="ShowTemp">-- °C</strong>
+      </div>
+</main>
+
+      <div id="TempValues"></div>
+
+<script src="script.js"></script>
