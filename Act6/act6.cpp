@@ -1,8 +1,17 @@
+// This #include statement was automatically added by the Particle IDE.
+#include <Adafruit_Sensor.h>
+
+
+// This #include statement was automatically added by the Particle IDE.
+#include <DHT.h>
+
+// This #include statement was automatically added by the Particle IDE.
+#include <Ubidots.h>
+
 SYSTEM_THREAD(ENABLED); // for running with/without internet connection
 
 #ifndef TOKEN
-#define TOKEN "BBUS-CrxB20qrNWQmWntN3zUGjxK6cmd6ul" // Put here your Ubidots TOKEN
-#endif
+#define TOKEN "BBUS-CrxB20qrNWQmWntN3zUGjxK6cmd6ul" // Token de Victor
 
 Ubidots ubidots(TOKEN, UBI_TCP);
 #include "math.h"; // libreria para funciones matematicas
