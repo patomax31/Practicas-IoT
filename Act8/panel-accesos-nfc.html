@@ -1,0 +1,757 @@
+<title>Panel de Accesos NFC</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: encabezado + franja de resumen; mapa de 6 placas de habitación y bitácora a la izquierda, simulador/registro/conexión a la derecha (apilado en móvil). */
+:root{
+  /* Paleta Jade pebble morning: #7B9669 #E6E6E6 #404E3B #6C8480 #BAC8B1 (con tonos ajustados donde el texto necesita contraste) */
+  --bg:#e6e6e6; --surface:#f5f7f3; --surface-2:#dce3d6; --ink:#404e3b; --ink-2:#536661; --line:#bac8b1;
+  --accent:#404e3b; --on-accent:#f5f7f3; --on-solid:#ffffff; --sage:#7b9669;
+  --ok:#4f6c40; --ok-bg:#dde6d6;
+  --warn:#8a5a00; --warn-bg:#eee3c9;
+  --bad:#a63a2e; --bad-bg:#ecdad5;
+  --rsv:#566f6c; --rsv-bg:#d3dedc;
+  --free:#536661; --free-bg:#dadfdb;
+  --f-display:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+  --f-body:'IBM Plex Sans','Segoe UI',system-ui,sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1b2219; --surface:#242d21; --surface-2:#2e392b; --ink:#e6e6e6; --ink-2:#a9b8a3; --line:#404e3b;
+    --accent:#bac8b1; --on-accent:#1b2219; --on-solid:#13180f; --sage:#8fb07a;
+    --ok:#8fb07a; --ok-bg:#2b3a25;
+    --warn:#dba94c; --warn-bg:#3a2f14;
+    --bad:#e58a7e; --bad-bg:#43241f;
+    --rsv:#8fb0aa; --rsv-bg:#243639;
+    --free:#b3bfae; --free-bg:#2e392b;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1b2219; --surface:#242d21; --surface-2:#2e392b; --ink:#e6e6e6; --ink-2:#a9b8a3; --line:#404e3b;
+  --accent:#bac8b1; --on-accent:#1b2219; --on-solid:#13180f; --sage:#8fb07a;
+  --ok:#8fb07a; --ok-bg:#2b3a25;
+  --warn:#dba94c; --warn-bg:#3a2f14;
+  --bad:#e58a7e; --bad-bg:#43241f;
+  --rsv:#8fb0aa; --rsv-bg:#243639;
+  --free:#b3bfae; --free-bg:#2e392b;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:14px; line-height:1.45;
+  padding-block:20px 48px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+.wrap{max-width:1240px;margin:0 auto;display:grid;gap:18px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(25px,4vw,34px);line-height:1.08;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h2{font-family:var(--f-display);font-weight:700;font-size:18px;line-height:1.2;margin:0;text-wrap:balance}
+.sub{margin:5px 0 0;color:var(--ink-2)}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+/* Encabezado */
+.top{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between}
+.status{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.conn{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:13px}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--free);flex:none}
+.conn.on .dot{background:var(--ok)}
+.conn.wait .dot{background:var(--warn)}
+.conn.err .dot{background:var(--bad)}
+.clock{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-size:13px;color:var(--ink-2)}
+
+/* Resumen */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.stat{background:var(--surface);padding:12px 14px;display:grid;gap:2px;align-content:start}
+.stat .k{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2)}
+.stat .v{font-family:var(--f-display);font-weight:700;font-size:28px;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat .v small{font-size:15px;color:var(--ink-2);font-weight:500}
+.stat .s{font-size:12px;color:var(--ink-2)}
+.stat.alert-on .v{color:var(--bad)}
+
+/* Estructura */
+.layout{display:grid;gap:22px 18px;grid-template-columns:minmax(0,1fr);grid-template-areas:"rooms" "side" "log"}
+@media (min-width:1000px){
+  .layout{grid-template-columns:minmax(0,1fr) 340px;grid-template-areas:"rooms side" "log side";align-items:start}
+}
+#secRooms{grid-area:rooms;min-width:0;display:grid;gap:10px}
+#side{grid-area:side;min-width:0;display:grid;gap:14px}
+#secLog{grid-area:log;min-width:0;display:grid;gap:10px}
+.sechead{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;justify-content:space-between}
+.sechead p{margin:0;color:var(--ink-2);font-size:12px}
+
+/* Habitaciones */
+.rooms{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(235px,1fr))}
+.room{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:10px;align-content:start;min-width:0}
+.room.free{--s:var(--free);--s-bg:var(--free-bg)}
+.room.rsv{--s:var(--rsv);--s-bg:var(--rsv-bg)}
+.room.occ{--s:var(--ok);--s-bg:var(--ok-bg)}
+.room.over{--s:var(--bad);--s-bg:var(--bad-bg)}
+.room-head{display:flex;align-items:center;gap:12px}
+.plaque{width:60px;height:60px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--s);color:var(--on-solid);flex:none}
+.room.free .plaque{background:var(--free-bg);color:var(--free);border:1px solid var(--line)}
+.plaque small{font-size:9px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;opacity:.85}
+.plaque b{font-family:var(--f-display);font-size:26px;line-height:1;font-weight:700;font-variant-numeric:tabular-nums}
+.room-meta{display:grid;gap:3px;min-width:0}
+.pill{display:inline-block;width:fit-content;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:600;background:var(--s-bg);color:var(--s)}
+.floor{font-size:12px;color:var(--ink-2)}
+.led{margin-left:auto;width:14px;height:14px;border-radius:50%;background:var(--surface-2);border:1px solid var(--line);flex:none;transition:background .2s,box-shadow .2s}
+.led.g{background:var(--sage);border-color:var(--sage);box-shadow:0 0 0 4px color-mix(in srgb,var(--sage) 32%,transparent)}
+.led.r{background:var(--bad);border-color:var(--bad);box-shadow:0 0 0 4px color-mix(in srgb,var(--bad) 28%,transparent)}
+.alert{margin:0;padding:6px 10px;border-radius:6px;background:var(--bad-bg);color:var(--bad);font-size:12px;font-weight:600}
+dl{margin:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:5px 12px}
+dt{font-size:12px;color:var(--ink-2)}
+dd{margin:0;overflow-wrap:anywhere}
+.door-open{color:var(--ok);font-weight:600}
+.bar{height:6px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--s);border-radius:99px}
+.room.occ .bar i{background:var(--sage)}
+.cap{margin:5px 0 0;font-size:12px;color:var(--ink-2)}
+.cap.warn{color:var(--warn);font-weight:600}
+.cap.bad{color:var(--bad);font-weight:600}
+.last{margin:0;font-size:12px;color:var(--ink-2)}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+
+/* Controles */
+button{font:inherit;color:inherit}
+.btn{min-height:36px;padding:6px 12px;border:1px solid var(--line);border-radius:7px;background:var(--surface);color:var(--ink);cursor:pointer;font-weight:500}
+.btn:hover{background:var(--surface-2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.primary:hover{filter:brightness(1.08);background:var(--accent)}
+.btn.danger{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 45%,var(--line))}
+.btn.danger-solid{background:var(--bad);border-color:var(--bad);color:var(--on-solid)}
+.btn.sm{min-height:34px;padding:5px 10px;font-size:13px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+input,select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:8px 10px;width:100%;min-height:38px;min-width:0}
+label{display:block;font-size:12px;font-weight:600;color:var(--ink-2);margin-bottom:4px}
+.field{min-width:0}
+.row{display:flex;gap:8px;align-items:center}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px}
+.check{display:flex;align-items:center;gap:8px;font-weight:500;margin:0}
+.check input{width:auto;min-height:0}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:12px;min-width:0}
+.hint{margin:0;color:var(--ink-2);font-size:12px}
+.tag{display:inline-block;padding:1px 8px;border-radius:99px;background:var(--warn-bg);color:var(--warn);font-size:11px;font-weight:600}
+.msg{margin:0;font-size:13px;min-height:1.2em}
+.msg.ok{color:var(--ok)}
+.msg.bad{color:var(--bad)}
+.divider{border:0;border-top:1px solid var(--line);margin:0}
+details summary{cursor:pointer;font-family:var(--f-display);font-weight:700;font-size:16px}
+details[open] summary{margin-bottom:12px}
+details > div{display:grid;gap:12px}
+pre{margin:0;padding:10px 12px;background:var(--surface-2);border-radius:7px;font-family:var(--f-mono);font-size:12px;overflow-x:auto;white-space:pre}
+
+/* Bitácora */
+.filters{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:transparent;padding:7px 12px;min-height:36px;cursor:pointer;font-weight:500}
+.seg button + button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.filters select{width:auto;min-width:150px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:700px}
+th{text-align:left;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2);font-weight:600;padding:9px 12px;border-bottom:1px solid var(--line);background:var(--surface-2);white-space:nowrap}
+td{padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td.t,td.u{white-space:nowrap}
+td.empty{text-align:center;color:var(--ink-2);padding:22px}
+.res{display:inline-block;padding:1px 9px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap}
+.res.ok{background:var(--ok-bg);color:var(--ok)}
+.res.bad{background:var(--bad-bg);color:var(--bad)}
+.res.adm{background:var(--free-bg);color:var(--free)}
+.logfoot{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between}
+.logfoot p{margin:0;font-size:12px;color:var(--ink-2)}
+
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Panel de Accesos NFC</h1>
+      <p class="sub">6 habitaciones · Lector MFRC-522 · Particle Photon</p>
+    </div>
+    <div class="status">
+      <span class="conn sim" id="conn"><span class="dot"></span><span id="connText">Modo simulación</span></span>
+      <span class="clock" id="clock"></span>
+    </div>
+  </header>
+
+  <section class="stats" id="stats" aria-label="Resumen"></section>
+
+  <div class="layout">
+    <section id="secRooms" aria-labelledby="hRooms">
+      <div class="sechead">
+        <h2 id="hRooms">Mapa de ocupación</h2>
+        <p>Una placa por puerta. El color indica el estado de la estancia.</p>
+      </div>
+      <div class="rooms" id="rooms"></div>
+    </section>
+
+    <aside id="side" aria-label="Herramientas">
+      <section class="panel" aria-labelledby="hSim">
+        <div>
+          <h2 id="hSim">Simulador de lector</h2>
+          <p class="hint">Prueba la lógica de acceso sin hardware. Los datos son de ejemplo.</p>
+        </div>
+        <div class="field">
+          <label for="simRoom">Lector de la habitación</label>
+          <select id="simRoom"></select>
+        </div>
+        <div class="field">
+          <label for="simCard">Tarjeta que se acerca</label>
+          <select id="simCard"></select>
+        </div>
+        <div class="btnrow">
+          <button class="btn primary" id="btnTap" type="button">Acercar tarjeta</button>
+          <button class="btn" id="btnExit" type="button">Botón interior</button>
+        </div>
+        <hr class="divider">
+        <div class="field">
+          <label>Reloj de prueba</label>
+          <p class="hint" id="offsetText" style="margin-bottom:8px"></p>
+          <div class="btnrow">
+            <button class="btn sm" type="button" data-adv="3600000">+1 h</button>
+            <button class="btn sm" type="button" data-adv="43200000">+12 h</button>
+            <button class="btn sm" type="button" data-adv="86400000">+1 día</button>
+            <button class="btn sm" type="button" data-adv="0">Hora real</button>
+          </div>
+        </div>
+        <label class="check"><input type="checkbox" id="sound" checked> Sonido del buzzer</label>
+      </section>
+
+      <section class="panel" aria-labelledby="hStay">
+        <div>
+          <h2 id="hStay">Registrar huésped</h2>
+          <p class="hint">Asigna una tarjeta a una habitación libre con su ventana de estancia.</p>
+        </div>
+        <form id="stayForm" novalidate style="display:grid;gap:12px">
+          <div class="field">
+            <label for="fRoom">Habitación</label>
+            <select id="fRoom"></select>
+          </div>
+          <div class="field">
+            <label for="fGuest">Huésped</label>
+            <input id="fGuest" type="text" autocomplete="off" placeholder="Nombre y apellido">
+          </div>
+          <div class="field">
+            <label for="fUid">UID de la tarjeta</label>
+            <div class="row">
+              <input id="fUid" class="mono" type="text" autocomplete="off" placeholder="04:A1:B2:C3">
+              <button class="btn sm" id="btnRead" type="button" style="white-space:nowrap">Simular lectura</button>
+            </div>
+          </div>
+          <div class="field">
+            <label for="fIn">Entrada (check-in)</label>
+            <input id="fIn" type="datetime-local">
+          </div>
+          <div class="field">
+            <label for="fOut">Salida (check-out)</label>
+            <input id="fOut" type="datetime-local">
+          </div>
+          <button class="btn primary" type="submit">Asignar tarjeta</button>
+          <p class="msg" id="formMsg" role="status"></p>
+        </form>
+      </section>
+
+      <section class="panel">
+        <details>
+          <summary>Conexión con Particle Cloud</summary>
+          <div>
+            <p class="hint">Las conexiones externas están bloqueadas en la vista previa de Claude. Abre el archivo .html en tu navegador para conectar los Photon. El token no se guarda.</p>
+            <div class="field">
+              <label for="pToken">Access token</label>
+              <input id="pToken" type="password" autocomplete="off" placeholder="Token de Particle">
+            </div>
+            <div class="field">
+              <label for="pEvent">Nombre del evento</label>
+              <input id="pEvent" type="text" value="acceso" autocomplete="off">
+            </div>
+            <div class="field">
+              <label for="pFn">Función de respuesta</label>
+              <input id="pFn" type="text" value="decision" autocomplete="off">
+            </div>
+            <div class="btnrow">
+              <button class="btn primary" id="btnConnect" type="button">Conectar</button>
+              <button class="btn" id="btnDisconnect" type="button">Desconectar</button>
+            </div>
+            <p class="msg" id="connMsg" role="status"></p>
+            <pre>Photon publica  acceso
+  {"room":"101","uid":"04:A1:B2:C3","type":"card"}
+  {"room":"101","type":"exit"}
+
+Panel responde  decision("grant" | "deny")</pre>
+          </div>
+        </details>
+      </section>
+    </aside>
+
+    <section id="secLog" aria-labelledby="hLog">
+      <div class="sechead">
+        <h2 id="hLog">Bitácora de accesos</h2>
+        <p>Entradas, salidas, intentos denegados y registros de recepción.</p>
+      </div>
+      <div class="filters">
+        <div class="seg" role="group" aria-label="Filtrar por resultado">
+          <button type="button" data-res="all" aria-pressed="true">Todos</button>
+          <button type="button" data-res="ok" aria-pressed="false">Concedidos</button>
+          <button type="button" data-res="bad" aria-pressed="false">Denegados</button>
+        </div>
+        <label class="sr" for="logRoom">Habitación</label>
+        <select id="logRoom"></select>
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Hora</th><th>Hab.</th><th>Evento</th><th>UID</th><th>Resultado</th><th>Motivo</th></tr></thead>
+          <tbody id="logBody"></tbody>
+        </table>
+      </div>
+      <div class="logfoot">
+        <p id="logCount"></p>
+        <div class="btnrow">
+          <button class="btn sm" id="btnCsv" type="button">Copiar como CSV</button>
+          <button class="btn sm danger" id="btnReset" type="button">Restablecer datos de ejemplo</button>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="sr" id="live" aria-live="polite"></div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------- Configuración ---------- */
+const ROOMS=[{id:'101',floor:1},{id:'102',floor:1},{id:'103',floor:1},{id:'201',floor:2},{id:'202',floor:2},{id:'203',floor:2}];
+const ROOM_IDS=ROOMS.map(r=>r.id);
+const KEY='panel-accesos-nfc-v1';
+const DOOR_MS=5000, FLASH_MS=2600, ALERT_N=3, ALERT_WIN=10*60*1000;
+const STATUS={
+  free:{label:'Disponible',cls:'free'},
+  reserved:{label:'Reservada',cls:'rsv'},
+  occupied:{label:'Ocupada',cls:'occ'},
+  overdue:{label:'Estancia vencida',cls:'over'}
+};
+const KIND={card:'Tarjeta',exit:'Botón interior',manual:'Apertura manual',admin:'Recepción'};
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ---------- Datos de ejemplo ---------- */
+function seed(){
+  const n=Date.now(), H=3600000;
+  const at=h=>n+h*H;
+  const E=(h,room,kind,uid,ok,reason)=>({t:at(h),room,kind,uid,ok,reason});
+  const OK='Credencial vigente', EX='Salida desde el interior';
+  return {
+    offset:0,
+    stays:{
+      '101':{guest:'Mariana Ortega',uid:'04:A1:B2:C3',checkin:at(-26),checkout:at(34),inside:true},
+      '102':{guest:'Daniel Ruiz',uid:'04:7F:19:E0',checkin:at(-3),checkout:at(45),inside:false},
+      '103':null,
+      '201':{guest:'Sofía Navarro',uid:'04:33:C8:5D',checkin:at(-50),checkout:at(0.5),inside:true},
+      '202':{guest:'Luis Herrera',uid:'04:9E:2A:71',checkin:at(-74),checkout:at(-2),inside:false},
+      '203':{guest:'Elena Campos',uid:'04:D2:60:8B',checkin:at(5),checkout:at(53),inside:false}
+    },
+    log:[
+      E(-0.05,'202','card','04:9E:2A:71',false,'Estancia vencida'),
+      E(-0.10,'202','card','04:9E:2A:71',false,'Estancia vencida'),
+      E(-0.12,'202','card','04:9E:2A:71',false,'Estancia vencida'),
+      E(-0.9,'101','card','04:A1:B2:C3',true,OK),
+      E(-1.2,'101','exit','04:A1:B2:C3',true,EX),
+      E(-2.5,'102','exit','04:7F:19:E0',true,EX),
+      E(-2.9,'102','card','04:7F:19:E0',true,OK),
+      E(-3,'102','admin','04:7F:19:E0',true,'Check-in: Daniel Ruiz'),
+      E(-4.5,'201','card','04:33:C8:5D',true,OK),
+      E(-5,'201','exit','04:33:C8:5D',true,EX),
+      E(-6,'103','card','04:FF:00:12',false,'UID no registrado'),
+      E(-8.8,'101','card','04:A1:B2:C3',true,OK),
+      E(-9,'101','exit','04:A1:B2:C3',true,EX),
+      E(-26,'101','admin','04:A1:B2:C3',true,'Check-in: Mariana Ortega')
+    ]
+  };
+}
+function load(){
+  try{
+    const raw=localStorage.getItem(KEY);
+    if(raw){const o=JSON.parse(raw); if(o&&o.stays&&o.log) return o;}
+  }catch(e){}
+  return seed();
+}
+function save(){ try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} }
+
+let S=load();
+const now=()=>Date.now()+(S.offset||0);
+const doorUntil={}, flashes={};
+let pending=null;
+const filt={res:'all',room:'all'};
+
+/* ---------- Formato ---------- */
+const fmtT=ms=>new Date(ms).toLocaleTimeString('es-MX',{hour12:false});
+const fmtDT=ms=>new Date(ms).toLocaleString('es-MX',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit',hour12:false}).replace(',','');
+const sameDay=(a,b)=>new Date(a).toDateString()===new Date(b).toDateString();
+function dur(ms){
+  const m=Math.round(Math.abs(ms)/60000);
+  if(m<60) return m+' min';
+  const h=Math.floor(m/60);
+  if(h<24) return h+' h'+(m%60?' '+(m%60)+' min':'');
+  const d=Math.floor(h/24);
+  return d+' d'+(h%24?' '+(h%24)+' h':'');
+}
+function toLocalInput(ms){
+  const d=new Date(ms), p=n=>String(n).padStart(2,'0');
+  return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes());
+}
+function normUid(s){
+  const h=String(s||'').replace(/[^0-9a-f]/gi,'').toUpperCase();
+  if(h.length<8||h.length>20||h.length%2) return null;
+  return h.match(/../g).join(':');
+}
+
+/* ---------- Lógica de acceso (validación en el servidor) ---------- */
+function roomStatus(id,t){
+  const s=S.stays[id];
+  if(!s) return 'free';
+  if(t<s.checkin) return 'reserved';
+  if(t>s.checkout) return 'overdue';
+  return 'occupied';
+}
+function decide(room,uid,t){
+  const s=S.stays[room];
+  if(s&&s.uid===uid){
+    if(t<s.checkin) return {ok:false,reason:'Estancia aún no inicia'};
+    if(t>s.checkout) return {ok:false,reason:'Estancia vencida'};
+    return {ok:true,reason:'Credencial vigente'};
+  }
+  const other=ROOM_IDS.find(r=>S.stays[r]&&S.stays[r].uid===uid);
+  if(other) return {ok:false,reason:'Tarjeta asignada a la hab. '+other};
+  return {ok:false,reason:'UID no registrado'};
+}
+function alertCount(room,t){
+  return S.log.filter(e=>e.room===room&&e.kind==='card'&&!e.ok&&e.t<=t&&t-e.t<=ALERT_WIN).length;
+}
+function addLog(e){ S.log.unshift(e); if(S.log.length>300) S.log.length=300; }
+
+/* ---------- Eventos del lector ---------- */
+let ac=null;
+function beep(ok){
+  if(!$('sound').checked) return;
+  try{
+    ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+    const seq=ok?[[880,0,.12]]:[[220,0,.14],[220,.2,.14]];
+    seq.forEach(([f,s,d])=>{
+      const o=ac.createOscillator(), g=ac.createGain();
+      o.type='square'; o.frequency.value=f; g.gain.value=.04;
+      o.connect(g); g.connect(ac.destination);
+      o.start(ac.currentTime+s); o.stop(ac.currentTime+s+d);
+    });
+  }catch(e){}
+}
+function feedback(room,ok){
+  flashes[room]={ok,until:Date.now()+FLASH_MS};
+  setTimeout(render,FLASH_MS+80);
+  beep(ok);
+}
+function openDoor(room){
+  doorUntil[room]=Date.now()+DOOR_MS;
+  setTimeout(render,DOOR_MS+80);
+}
+function announce(msg){ $('live').textContent=msg; }
+
+function tap(room,uid){
+  const t=now(), d=decide(room,uid,t);
+  addLog({t,room,kind:'card',uid,ok:d.ok,reason:d.reason});
+  if(d.ok){ S.stays[room].inside=true; openDoor(room); }
+  feedback(room,d.ok);
+  announce('Habitación '+room+': acceso '+(d.ok?'concedido':'denegado')+'. '+d.reason);
+  save(); render();
+  return d;
+}
+function exitBtn(room){
+  const s=S.stays[room];
+  addLog({t:now(),room,kind:'exit',uid:s?s.uid:'—',ok:true,reason:'Salida desde el interior'});
+  if(s) s.inside=false;
+  openDoor(room); feedback(room,true);
+  announce('Habitación '+room+': salida registrada.');
+  save(); render();
+}
+function manualOpen(room){
+  addLog({t:now(),room,kind:'manual',uid:'—',ok:true,reason:'Apertura manual desde recepción'});
+  openDoor(room); feedback(room,true);
+  announce('Habitación '+room+': puerta abierta desde recepción.');
+  save(); render();
+}
+function checkout(room){
+  const s=S.stays[room]; if(!s) return;
+  addLog({t:now(),room,kind:'admin',uid:s.uid,ok:true,reason:'Check-out: '+s.guest+' (tarjeta desactivada)'});
+  S.stays[room]=null; pending=null;
+  save(); render();
+}
+
+/* ---------- Render ---------- */
+function setOptions(sel,opts){
+  const cur=sel.value;
+  const html=opts.map(o=>'<option value="'+esc(o.v)+'">'+esc(o.l)+'</option>').join('');
+  if(sel.dataset.h===html) return;
+  sel.dataset.h=html; sel.innerHTML=html;
+  if(opts.some(o=>o.v===cur)) sel.value=cur;
+}
+
+function renderStats(){
+  const t=now();
+  let occ=0,over=0,free=0;
+  ROOM_IDS.forEach(id=>{const st=roomStatus(id,t); if(st==='occupied')occ++; else if(st==='overdue')over++; else if(st==='free')free++;});
+  const today=S.log.filter(e=>e.kind!=='admin'&&sameDay(e.t,t));
+  const okN=today.filter(e=>e.ok).length, badN=today.length-okN;
+  const alerts=ROOM_IDS.filter(id=>alertCount(id,t)>=ALERT_N);
+  const cell=(k,v,s,cls)=>'<div class="stat '+(cls||'')+'"><span class="k">'+k+'</span><span class="v">'+v+'</span><span class="s">'+s+'</span></div>';
+  $('stats').innerHTML=
+    cell('Ocupadas',occ+'<small> / '+ROOMS.length+'</small>',free+' disponibles'+(over?' · '+over+' vencida'+(over>1?'s':''):''))+
+    cell('Concedidos hoy',okN,'Tarjeta y botón interior')+
+    cell('Denegados hoy',badN,'Tarjeta inválida o vencida')+
+    cell('Alertas',alerts.length,alerts.length?'Hab. '+alerts.join(', '):'Sin intentos repetidos',alerts.length?'alert-on':'');
+}
+
+let lastRooms='';
+function renderRooms(){
+  const t=now(), real=Date.now();
+  let html='';
+  ROOMS.forEach(r=>{
+    const s=S.stays[r.id], st=roomStatus(r.id,t), info=STATUS[st];
+    const open=(doorUntil[r.id]||0)>real;
+    const fl=flashes[r.id]&&flashes[r.id].until>real?(flashes[r.id].ok?'g':'r'):'';
+    const al=alertCount(r.id,t);
+    const last=S.log.find(e=>e.room===r.id);
+    let pct=0, cap='Sin huésped asignado', capCls='';
+    if(s){
+      const total=s.checkout-s.checkin;
+      pct=Math.max(0,Math.min(1,(t-s.checkin)/total))*100;
+      if(st==='occupied'){ cap='Sale en '+dur(s.checkout-t); if(s.checkout-t<3600000) capCls='warn'; }
+      else if(st==='overdue'){ cap='Venció hace '+dur(t-s.checkout); capCls='bad'; pct=100; }
+      else { cap='Llega en '+dur(s.checkin-t); }
+    }
+    const presence=s?(s.inside?' · Huésped dentro':' · Huésped fuera'):'';
+    const lastTxt=last
+      ? fmtT(last.t)+' · '+(last.kind==='card'?(last.ok?'Entrada concedida':'Acceso denegado'):KIND[last.kind])
+      : 'Sin eventos';
+    const act=s
+      ? '<button class="btn sm '+(pending===r.id?'danger-solid':'danger')+'" type="button" data-act="checkout">'+(pending===r.id?'Confirmar check-out':'Check-out')+'</button>'
+      : '<button class="btn sm primary" type="button" data-act="checkin">Registrar huésped</button>';
+    html+=
+      '<article class="room '+info.cls+'" data-room="'+r.id+'" aria-label="Habitación '+r.id+', '+info.label+'">'+
+        '<div class="room-head">'+
+          '<div class="plaque"><small>Hab.</small><b>'+r.id+'</b></div>'+
+          '<div class="room-meta"><span class="pill">'+info.label+'</span><span class="floor">Piso '+r.floor+'</span></div>'+
+          '<span class="led '+fl+'" title="LED RGB del lector" aria-hidden="true"></span>'+
+        '</div>'+
+        (al>=ALERT_N?'<p class="alert">'+al+' intentos denegados en 10 min</p>':'')+
+        '<dl>'+
+          '<dt>Huésped</dt><dd>'+(s?esc(s.guest):'—')+'</dd>'+
+          '<dt>Tarjeta</dt><dd class="mono">'+(s?esc(s.uid):'—')+'</dd>'+
+          '<dt>Estancia</dt><dd>'+(s?fmtDT(s.checkin)+' → '+fmtDT(s.checkout):'—')+'</dd>'+
+          '<dt>Puerta</dt><dd>'+(open?'<span class="door-open">Abierta (relé activo)</span>':'Cerrada')+presence+'</dd>'+
+        '</dl>'+
+        '<div><div class="bar" aria-hidden="true"><i style="width:'+pct.toFixed(1)+'%"></i></div><p class="cap '+capCls+'">'+cap+'</p></div>'+
+        '<p class="last">Último: '+lastTxt+'</p>'+
+        '<div class="actions">'+act+'<button class="btn sm" type="button" data-act="open">Abrir puerta</button></div>'+
+      '</article>';
+  });
+  if(html===lastRooms) return;
+  const root=$('rooms'), ae=document.activeElement;
+  let fk=null;
+  if(ae&&root.contains(ae)&&ae.dataset.act){const a=ae.closest('[data-room]'); if(a) fk=[a.dataset.room,ae.dataset.act];}
+  root.innerHTML=html; lastRooms=html;
+  if(fk){const b=root.querySelector('[data-room="'+fk[0]+'"] [data-act="'+fk[1]+'"]'); if(b) b.focus();}
+}
+
+function filteredLog(){
+  return S.log.filter(e=>{
+    if(filt.room!=='all'&&e.room!==filt.room) return false;
+    if(filt.res==='ok') return e.kind!=='admin'&&e.ok;
+    if(filt.res==='bad') return e.kind!=='admin'&&!e.ok;
+    return true;
+  });
+}
+function renderLog(){
+  const t=now(), rows=filteredLog(), shown=rows.slice(0,60);
+  $('logBody').innerHTML=shown.length?shown.map(e=>{
+    const res=e.kind==='admin'?'<span class="res adm">Registro</span>':(e.ok?'<span class="res ok">Concedido</span>':'<span class="res bad">Denegado</span>');
+    return '<tr><td class="t mono">'+(sameDay(e.t,t)?fmtT(e.t):fmtDT(e.t))+'</td>'+
+      '<td class="mono">'+esc(e.room)+'</td><td>'+KIND[e.kind]+'</td>'+
+      '<td class="u mono">'+esc(e.uid)+'</td><td>'+res+'</td><td>'+esc(e.reason)+'</td></tr>';
+  }).join(''):'<tr><td class="empty" colspan="6">No hay eventos con este filtro.</td></tr>';
+  $('logCount').textContent='Mostrando '+shown.length+' de '+rows.length+' eventos';
+}
+
+function renderControls(){
+  setOptions($('simRoom'),ROOMS.map(r=>({v:r.id,l:'Habitación '+r.id})));
+  const cards=ROOM_IDS.filter(id=>S.stays[id]).map(id=>({v:S.stays[id].uid,l:S.stays[id].guest+' · '+S.stays[id].uid+' (hab. '+id+')'}));
+  cards.push({v:'04:FF:00:12',l:'Tarjeta clonada · UID desconocido'});
+  setOptions($('simCard'),cards);
+  const freeRooms=ROOM_IDS.filter(id=>!S.stays[id]).map(id=>({v:id,l:'Habitación '+id}));
+  setOptions($('fRoom'),freeRooms.length?freeRooms:[{v:'',l:'Sin habitaciones libres'}]);
+  setOptions($('logRoom'),[{v:'all',l:'Todas las habitaciones'}].concat(ROOMS.map(r=>({v:r.id,l:'Habitación '+r.id}))));
+  $('logRoom').value=filt.room;
+  const off=S.offset||0;
+  $('offsetText').textContent=off?'Reloj adelantado '+dur(off)+'. Las tarjetas vencen según esta hora.':'Usando la hora real.';
+}
+
+function updateClock(){
+  const off=S.offset||0;
+  $('clock').textContent=new Date(now()).toLocaleString('es-MX',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false})+(off?' · hora de prueba':'');
+}
+function render(){ renderStats(); renderRooms(); renderLog(); renderControls(); updateClock(); }
+
+/* ---------- Interacción ---------- */
+$('rooms').addEventListener('click',ev=>{
+  const b=ev.target.closest('button[data-act]'); if(!b) return;
+  const room=b.closest('[data-room]').dataset.room, act=b.dataset.act;
+  if(act!=='checkout') pending=null;
+  if(act==='open') manualOpen(room);
+  else if(act==='checkin'){
+    $('fRoom').value=room; render();
+    const f=$('stayForm');
+    f.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'});
+    $('fGuest').focus({preventScroll:true});
+  }
+  else if(act==='checkout'){
+    if(pending===room) checkout(room);
+    else{
+      pending=room; render();
+      setTimeout(()=>{ if(pending===room){pending=null; render();} },3500);
+    }
+  }
+});
+
+$('btnTap').addEventListener('click',()=>tap($('simRoom').value,$('simCard').value));
+$('btnExit').addEventListener('click',()=>exitBtn($('simRoom').value));
+document.querySelectorAll('[data-adv]').forEach(b=>b.addEventListener('click',()=>{
+  const v=+b.dataset.adv;
+  S.offset=v?(S.offset||0)+v:0;
+  save(); render();
+}));
+
+document.querySelectorAll('[data-res]').forEach(b=>b.addEventListener('click',()=>{
+  filt.res=b.dataset.res;
+  document.querySelectorAll('[data-res]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+  renderLog();
+}));
+$('logRoom').addEventListener('change',e=>{ filt.room=e.target.value; renderLog(); });
+
+$('btnCsv').addEventListener('click',()=>{
+  const q=v=>'"'+String(v).replace(/"/g,'""')+'"';
+  const rows=[['fecha_hora','habitacion','evento','uid','resultado','motivo']].concat(filteredLog().map(e=>[
+    new Date(e.t).toISOString(),e.room,KIND[e.kind],e.uid,e.kind==='admin'?'Registro':(e.ok?'Concedido':'Denegado'),e.reason
+  ]));
+  const csv=rows.map(r=>r.map(q).join(',')).join('\n');
+  const b=$('btnCsv'), old=b.textContent;
+  const done=ok=>{ b.textContent=ok?'Copiado':'No se pudo copiar'; setTimeout(()=>{b.textContent=old;},1600); };
+  const fallback=()=>{
+    try{
+      const ta=document.createElement('textarea'); ta.value=csv; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select(); const ok=document.execCommand('copy'); document.body.removeChild(ta); done(ok);
+    }catch(e){ done(false); }
+  };
+  if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(csv).then(()=>done(true),fallback);
+  else fallback();
+});
+
+let resetArmed=false;
+$('btnReset').addEventListener('click',()=>{
+  const b=$('btnReset');
+  if(!resetArmed){
+    resetArmed=true; b.textContent='Confirmar restablecer';
+    setTimeout(()=>{resetArmed=false; b.textContent='Restablecer datos de ejemplo';},3500);
+    return;
+  }
+  resetArmed=false; b.textContent='Restablecer datos de ejemplo';
+  S=seed(); pending=null; lastRooms=''; save(); defaultDates(); render();
+});
+
+/* Formulario de check-in */
+const fIn=$('fIn'), fOut=$('fOut');
+function defaultDates(){
+  const t=now(); fIn.value=toLocalInput(t);
+  const o=new Date(t); o.setDate(o.getDate()+1); o.setHours(12,0,0,0);
+  fOut.value=toLocalInput(o.getTime());
+}
+$('btnRead').addEventListener('click',()=>{
+  $('fUid').value='04:'+[0,1,2].map(()=>Math.floor(Math.random()*256).toString(16).padStart(2,'0').toUpperCase()).join(':');
+});
+$('stayForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const msg=$('formMsg'), fail=t=>{msg.className='msg bad'; msg.textContent=t;};
+  const room=$('fRoom').value, guest=$('fGuest').value.trim(), uid=normUid($('fUid').value);
+  const inT=new Date(fIn.value).getTime(), outT=new Date(fOut.value).getTime();
+  if(!room||S.stays[room]) return fail('Elige una habitación libre.');
+  if(!guest) return fail('Escribe el nombre del huésped.');
+  if(!uid) return fail('El UID debe tener al menos 4 bytes en hexadecimal, por ejemplo 04:A1:B2:C3.');
+  const used=ROOM_IDS.find(r=>S.stays[r]&&S.stays[r].uid===uid);
+  if(used) return fail('Esa tarjeta ya está asignada a la habitación '+used+'.');
+  if(isNaN(inT)||isNaN(outT)||outT<=inT) return fail('La salida debe ser posterior a la entrada.');
+  S.stays[room]={guest,uid,checkin:inT,checkout:outT,inside:false};
+  addLog({t:now(),room,kind:'admin',uid,ok:true,reason:'Check-in: '+guest});
+  msg.className='msg ok'; msg.textContent='Tarjeta '+uid+' asignada a la habitación '+room+'.';
+  $('fGuest').value=''; $('fUid').value=''; defaultDates();
+  save(); render();
+});
+
+/* ---------- Particle Cloud ---------- */
+let es=null;
+function setConn(state,text){
+  const c=$('conn'); c.className='conn '+state;
+  $('connText').textContent=state==='sim'?'Modo simulación':(state==='on'?'Particle Cloud conectado':text);
+  const m=$('connMsg'); m.textContent=text||''; m.className='msg '+(state==='on'?'ok':(state==='err'?'bad':''));
+}
+function disconnect(silent){
+  if(es){es.close(); es=null;}
+  if(!silent) setConn('sim','');
+}
+function connect(){
+  const token=$('pToken').value.trim(), name=$('pEvent').value.trim()||'acceso';
+  if(!token) return setConn('err','Falta el access token.');
+  disconnect(true); setConn('wait','Conectando…');
+  try{
+    es=new EventSource('https://api.particle.io/v1/events/'+encodeURIComponent(name)+'?access_token='+encodeURIComponent(token));
+  }catch(err){ return setConn('err','No se pudo abrir la conexión.'); }
+  es.onopen=()=>setConn('on','Escuchando el evento «'+name+'».');
+  es.onerror=()=>setConn('err',es&&es.readyState===0?'Reintentando conexión…':'Sin conexión con Particle Cloud.');
+  es.addEventListener(name,ev=>onParticle(ev,token));
+}
+function onParticle(ev,token){
+  let outer,msg;
+  try{ outer=JSON.parse(ev.data); msg=typeof outer.data==='string'?JSON.parse(outer.data):outer.data; }catch(e){ return; }
+  if(!msg||!ROOM_IDS.includes(String(msg.room))) return;
+  const room=String(msg.room);
+  if(msg.type==='exit'){ exitBtn(room); return; }
+  if(msg.type==='card'){
+    const uid=normUid(msg.uid); if(!uid) return;
+    const d=tap(room,uid);
+    if(outer.coreid){
+      const fn=$('pFn').value.trim()||'decision';
+      fetch('https://api.particle.io/v1/devices/'+encodeURIComponent(outer.coreid)+'/'+encodeURIComponent(fn),{
+        method:'POST',
+        headers:{'Content-Type':'application/x-www-form-urlencoded','Authorization':'Bearer '+token},
+        body:'args='+(d.ok?'grant':'deny')
+      }).catch(()=>setConn('err','No se pudo enviar la decisión al Photon.'));
+    }
+  }
+}
+$('btnConnect').addEventListener('click',connect);
+$('btnDisconnect').addEventListener('click',()=>disconnect(false));
+
+/* ---------- Arranque ---------- */
+defaultDates();
+render();
+setInterval(updateClock,1000);
+setInterval(render,30000);
+})();
+</script>
