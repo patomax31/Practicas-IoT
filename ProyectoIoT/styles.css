@@ -1,0 +1,635 @@
+
+/* ==============================
+   VARIABLES GENERALES
+============================== */
+
+:root {
+    --bg: #f5f6f8;
+    --card: #fff;
+    --text: #1d2330;
+    --muted: #667085;
+    --line: #e4e7ec;
+    --accent: #3b5bdb;
+    --ok: #1a7f4b;
+    --okbg: #e3f6ec;
+    --no: #b42318;
+    --nobg: #fdeceb;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+/* ==============================
+   ESTILOS GENERALES
+============================== */
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+header {
+    background: var(--card);
+    border-bottom: 1px solid var(--line);
+    padding: 14px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+h1 {
+    font-size: 18px;
+    margin: 0;
+    font-weight: 600;
+}
+
+h2 {
+    font-size: 16px;
+    margin: 0 0 12px;
+    font-weight: 600;
+}
+
+main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* ==============================
+   TARJETAS
+============================== */
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+/* ==============================
+   CONEXIÓN
+============================== */
+
+.conn {
+    font-size: 13px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--nobg);
+    color: var(--no);
+}
+
+.conn.on {
+    background: var(--okbg);
+    color: var(--ok);
+}
+
+/* ==============================
+   BANNERS Y ESTADOS
+============================== */
+
+.banner {
+    background: var(--nobg);
+    color: var(--no);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.status {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+}
+
+.status .item .label {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.status .item .value {
+    font-size: 22px;
+    font-weight: 600;
+}
+
+/* ==============================
+   FORMULARIOS GENERALES
+============================== */
+
+label {
+    display: block;
+    font-size: 13px;
+    color: var(--muted);
+    margin: 12px 0 4px;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 9px 11px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 15px;
+    background: #fff;
+    color: var(--text);
+}
+
+.row {
+    display: flex;
+    gap: 8px;
+}
+
+.row input {
+    flex: 1;
+}
+
+/* ==============================
+   BOTONES GENERALES
+============================== */
+
+button.primary {
+    background: var(--accent);
+    color: #fff;
+    border: 0;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+button.secondary {
+    background: #fff;
+    color: var(--text);
+    border: 1px solid var(--line);
+    padding: 9px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+button.danger {
+    background: #fff;
+    color: var(--no);
+    border: 1px solid var(--line);
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: .6;
+    cursor: default;
+}
+
+/* ==============================
+   MENSAJES Y TEXTOS
+============================== */
+
+.hint {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+}
+
+.msg {
+    margin-top: 12px;
+    font-size: 14px;
+    padding: 8px 10px;
+    border-radius: 8px;
+}
+
+.msg.ok {
+    background: var(--okbg);
+    color: var(--ok);
+}
+
+.msg.err {
+    background: var(--nobg);
+    color: var(--no);
+}
+
+.muted {
+    color: var(--muted);
+}
+
+/* ==============================
+   TABLAS
+============================== */
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+th {
+    text-align: left;
+    font-weight: 500;
+    color: var(--muted);
+    font-size: 12px;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+}
+
+td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+tr:last-child td {
+    border-bottom: 0;
+}
+
+/* ==============================
+   AVATARES
+============================== */
+
+.avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #e8ebf5;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    overflow: hidden;
+    flex: none;
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ==============================
+   INSIGNIAS
+============================== */
+
+.badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.badge.ok {
+    background: var(--okbg);
+    color: var(--ok);
+}
+
+.badge.no {
+    background: var(--nobg);
+    color: var(--no);
+}
+
+/* ==============================
+   PERSONAS
+============================== */
+
+.people {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+}
+
+.person {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.person .info {
+    flex: 1;
+    min-width: 0;
+}
+
+.person .name {
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ==============================
+   PREVISUALIZACIÓN DE FOTOS
+============================== */
+
+.preview {
+    width: 96px;
+    height: 96px;
+    border-radius: 12px;
+    object-fit: cover;
+    margin-top: 8px;
+    border: 1px solid var(--line);
+}
+
+/* ==============================
+   OTROS ELEMENTOS
+============================== */
+
+code {
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 12px;
+}
+
+.empty {
+    text-align: center;
+    padding: 24px;
+}
+
+.warn {
+    font-size: 12px;
+    color: var(--no);
+    margin-top: 2px;
+}
+
+/* ==============================
+   LOGIN - DISEÑO HOTELERO
+============================== */
+
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 25px;
+
+    background:
+        radial-gradient(
+            circle at top left,
+            rgba(194, 164, 112, 0.16),
+            transparent 35%
+        ),
+        linear-gradient(
+            135deg,
+            #172e35,
+            #263f43 55%,
+            #405451
+        );
+
+    font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 430px;
+    padding: 42px 38px;
+
+    background: #fbfaf7;
+    border: 1px solid rgba(211, 190, 151, 0.45);
+    border-radius: 18px;
+
+    box-shadow: 0 20px 55px rgba(0, 0, 0, 0.22);
+
+    position: relative;
+    overflow: hidden;
+}
+
+/* Detalle decorativo superior */
+
+.auth-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+
+    background: linear-gradient(
+        90deg,
+        #a88959,
+        #d6bd8c,
+        #a88959
+    );
+}
+
+/* Icono del hotel */
+
+.auth-icon {
+    width: 76px;
+    height: 76px;
+    margin: 0 auto 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    background: #e9e5da;
+    color: #304b4b;
+
+    font-size: 36px;
+}
+
+/* Título */
+
+.auth-card h1 {
+    color: #263d3e;
+    text-align: center;
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 27px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+
+    margin: 0 0 10px;
+}
+
+/* Descripción */
+
+.auth-description {
+    color: #77766e;
+    text-align: center;
+
+    font-size: 14px;
+    line-height: 1.6;
+
+    margin: 0 0 30px;
+}
+
+/* Formulario */
+
+.auth-card form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Etiquetas */
+
+.auth-card label {
+    color: #475653;
+    font-size: 13px;
+    font-weight: 600;
+    margin: 8px 0 2px;
+}
+
+/* Campos de entrada */
+
+.auth-card input {
+    width: 100%;
+    padding: 13px 14px;
+
+    border: 1px solid #dedbd2;
+    border-radius: 9px;
+
+    background: #fff;
+    color: #263d3e;
+
+    font-size: 15px;
+    outline: none;
+
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
+}
+
+.auth-card input::placeholder {
+    color: #aaa9a1;
+}
+
+.auth-card input:focus {
+    border-color: #a88959;
+    box-shadow: 0 0 0 3px rgba(168, 137, 89, 0.13);
+}
+
+/* Botón de acceso */
+
+.auth-button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 18px;
+
+    border: none;
+    border-radius: 9px;
+
+    background: #304b4b;
+    color: #fff;
+
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s,
+        transform 0.2s,
+        box-shadow 0.2s;
+}
+
+.auth-button:hover {
+    background: #203a3b;
+    box-shadow: 0 5px 15px rgba(32, 58, 59, 0.2);
+    transform: translateY(-1px);
+}
+
+.auth-button:active {
+    transform: translateY(0);
+}
+
+/* Mensajes de error */
+
+.auth-error {
+    padding: 12px 14px;
+    margin-bottom: 18px;
+
+    border: 1px solid #e8c5bd;
+    border-radius: 9px;
+
+    background: #f8eae6;
+    color: #a04436;
+
+    font-size: 13px;
+    text-align: center;
+}
+
+/* Pie del formulario */
+
+.auth-footer {
+    margin-top: 28px;
+    padding-top: 18px;
+
+    border-top: 1px solid #e9e5dc;
+
+    color: #929087;
+    font-size: 12px;
+    text-align: center;
+    letter-spacing: 0.2px;
+}
+
+/* ==============================
+   CERRAR SESIÓN
+============================== */
+
+.logout-button {
+    display: inline-block;
+    padding: 10px 15px;
+
+    border: 1px solid #e5d5d0;
+    border-radius: 8px;
+
+    background: #f8eeeb;
+    color: #9e493d;
+
+    text-decoration: none;
+    font-size: 14px;
+
+    transition: background 0.2s;
+}
+
+.logout-button:hover {
+    background: #f1ded8;
+}
+
+/* ==============================
+   DISEÑO RESPONSIVE
+============================== */
+
+@media (max-width: 480px) {
+
+    .auth-page {
+        padding: 16px;
+    }
+
+    .auth-card {
+        padding: 35px 24px;
+    }
+
+    .auth-card h1 {
+        font-size: 24px;
+    }
+
+    .auth-icon {
+        width: 68px;
+        height: 68px;
+        font-size: 32px;
+    }
+
+}

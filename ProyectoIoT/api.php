@@ -1,4 +1,17 @@
 <?php
+session_start();
+
+if (empty($_SESSION['admin_id'])) {
+    http_response_code(401);
+    header('Content-Type: application/json; charset=utf-8');
+
+    echo json_encode([
+        'error' => 'No autorizado. Inicia sesión.'
+    ]);
+
+    exit;
+}
+
 declare(strict_types=1);
 // API para guardar personas, fotos y accesos en MySQL.
 // Las tablas se crean solas la primera vez que se abre la página.
