@@ -27,6 +27,7 @@ Serial.begin(9600);
 dht.begin();
 
 Particle.function("DHT_led", establecerTemperaturaMaxima);
+Particle.variable("temp", t);
 
 }
 
