@@ -14,114 +14,647 @@ if (empty($_SESSION['admin_id'])) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Control de accesos NFC</title>
+  <title>Panel administrativo | Hotel</title>
   <link rel="stylesheet" href="styles.css">
+
+  <style>
+    /* ---------- ESTRUCTURA GENERAL ---------- */
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f4f6f7;
+    }
+
+    .app-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ---------- SIDEBAR ---------- */
+
+    .sidebar {
+      width: 255px;
+      min-width: 255px;
+      background: #172e35;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      padding: 25px 16px;
+      box-sizing: border-box;
+    }
+
+    .sidebar-brand {
+      padding: 5px 12px 28px;
+      border-bottom: 1px solid rgba(255,255,255,.12);
+      margin-bottom: 25px;
+    }
+
+    .sidebar-brand h2 {
+      color: #fff;
+      font-size: 21px;
+      margin: 0 0 6px;
+    }
+
+    .sidebar-brand span {
+      color: #c3cfd0;
+      font-size: 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .sidebar-label {
+      color: #a9b9ba;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.3px;
+      padding: 0 12px;
+      margin: 0 0 12px;
+      text-transform: uppercase;
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      width: 100%;
+      padding: 13px 14px;
+      border: 0;
+      border-radius: 9px;
+      background: transparent;
+      color: #d5dfdf;
+      font-size: 14px;
+      text-align: left;
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    .nav-item:hover {
+      background: rgba(255,255,255,.09);
+      color: #fff;
+    }
+
+    .nav-item.active {
+      background: #304b4b;
+      color: #fff;
+      box-shadow: inset 3px 0 #d6bd8c;
+    }
+
+    .nav-icon {
+      width: 21px;
+      font-size: 18px;
+      text-align: center;
+    }
+
+    .sidebar-bottom {
+      margin-top: auto;
+      padding-top: 25px;
+      border-top: 1px solid rgba(255,255,255,.12);
+    }
+
+    .admin-info {
+      color: #d5dfdf;
+      font-size: 12px;
+      padding: 0 12px;
+      margin-bottom: 15px;
+    }
+
+    .logout-button {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 12px;
+      background: #dc2626;
+      color: #fff;
+      text-align: center;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      transition: .2s;
+    }
+
+    .logout-button:hover {
+      background: #b91c1c;
+    }
+
+    /* ---------- CONTENIDO PRINCIPAL ---------- */
+
+    .main-area {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      min-height: 76px;
+      background: #fff;
+      border-bottom: 1px solid #e5e9eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 15px 30px;
+      box-sizing: border-box;
+    }
+
+    .topbar h1 {
+      margin: 0;
+      color: #263f43;
+      font-size: 22px;
+    }
+
+    .topbar-status {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .content {
+      padding: 28px;
+      width: 100%;
+      max-width: 1500px;
+      box-sizing: border-box;
+      margin: 0 auto;
+    }
+
+    .view-section[hidden] {
+      display: none !important;
+    }
+
+    .section-heading {
+      margin-bottom: 22px;
+    }
+
+    .section-heading h2 {
+      margin: 0 0 7px;
+      color: #263f43;
+      font-size: 23px;
+    }
+
+    .section-heading p {
+      margin: 0;
+      color: #778589;
+      font-size: 14px;
+    }
+
+    /* ---------- TARJETAS Y ESTADOS ---------- */
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .content .card {
+      margin: 0 0 20px;
+    }
+
+    .dashboard-grid .card {
+      margin: 0;
+    }
+
+    .status {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 15px;
+    }
+
+    .status .item {
+      min-width: 0;
+    }
+
+    .hint {
+      line-height: 1.6;
+    }
+
+    /* ---------- HABITACIONES ---------- */
+
+    .rooms-placeholder {
+      background: #fff;
+      border: 1px solid #e5e9eb;
+      border-radius: 13px;
+      padding: 55px 25px;
+      text-align: center;
+      box-shadow: 0 3px 12px rgba(25,45,50,.04);
+    }
+
+    .rooms-placeholder .room-icon {
+      width: 75px;
+      height: 75px;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: #edf2f1;
+      color: #304b4b;
+      font-size: 34px;
+    }
+
+    .rooms-placeholder h3 {
+      color: #263f43;
+      margin: 0 0 10px;
+      font-size: 20px;
+    }
+
+    .rooms-placeholder p {
+      color: #778589;
+      max-width: 480px;
+      margin: 0 auto;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    /* ---------- RESPONSIVE ---------- */
+
+    @media (max-width: 850px) {
+      .app-layout {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        min-width: 0;
+        padding: 15px;
+      }
+
+      .sidebar-brand {
+        padding: 5px 8px 15px;
+        margin-bottom: 15px;
+      }
+
+      .sidebar-nav {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .sidebar-bottom {
+        margin-top: 15px;
+        padding-top: 15px;
+      }
+
+      .admin-info {
+        display: none;
+      }
+
+      .topbar {
+        padding: 15px 20px;
+      }
+
+      .content {
+        padding: 20px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .sidebar-nav {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .topbar-status {
+        justify-content: flex-start;
+      }
+
+      .dashboard-grid,
+      .status {
+        grid-template-columns: 1fr;
+      }
+
+      .content {
+        padding: 14px;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<header>
-  <h1>Control de accesos NFC</h1>
+<div class="app-layout">
 
-  <div style="display:flex;gap:8px;flex-wrap:wrap">
-    <span id="conn" class="conn">Photon: conectando...</span>
-    <span id="dbconn" class="conn">Base de datos: conectando...</span>
-    <a href="logout.php" class="logout-button"> Cerrar sesión </a>
-  </div>
-</header>
+  <!-- ================= SIDEBAR ================= -->
 
-<main>
-  <div id="banner" class="banner" hidden></div>
+  <aside class="sidebar">
 
-  <div class="card">
-    <h2>Estado actual</h2>
-    <div class="status">
-      <div class="item">
-        <div class="label">Estado</div>
-        <div class="value" id="ShowStatus">-</div>
-      </div>
-      <div class="item">
-        <div class="label">Último acceso</div>
-        <div class="value" id="ShowLast">-</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>Historial</h2>
-    <input id="filtro" type="text"
-      placeholder="Buscar por nombre, UID, fecha o resultado"
-      style="margin-bottom:12px">
-
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Foto</th>
-            <th>Nombre</th>
-            <th>Fecha</th>
-            <th>Hora</th>
-            <th>Resultado</th>
-          </tr>
-        </thead>
-        <tbody id="logs"></tbody>
-      </table>
+    <div class="sidebar-brand">
+      <h2>Hotel</h2>
+      <span>Panel administrativo</span>
     </div>
 
-    <p class="empty muted" id="vacioLogs" hidden>
-      Todavía no hay accesos registrados.
-    </p>
+    <div class="sidebar-label">Menú principal</div>
 
-    <p class="hint">
-      El historial se guarda en la base de datos MySQL. La página copia
-      a la base de datos los accesos que ve en el Photon, así que debe
-      estar abierta para registrarlos.
-    </p>
-  </div>
+    <nav class="sidebar-nav">
 
-  <div class="card">
-    <h2>Registrar persona</h2>
+      <button class="nav-item active" type="button" data-view="inicio">
+        <span class="nav-icon">⌂</span>
+        Estado actual
+      </button>
 
-    <form id="form" autocomplete="off">
-      <label for="nombre">Nombre</label>
-      <input id="nombre" type="text" required>
+      <button class="nav-item" type="button" data-view="historial">
+        <span class="nav-icon">◷</span>
+        Historial
+      </button>
 
-      <label for="uid">UID de la tarjeta</label>
-      <div class="row">
-        <input id="uid" type="text" placeholder="Ej. 04A1B2C3" required>
-        <button class="secondary" id="usarUltima" type="button">
-          Usar última tarjeta desconocida
-        </button>
+      <button class="nav-item" type="button" data-view="registro">
+        <span class="nav-icon">＋</span>
+        Registrar persona
+      </button>
+
+      <button class="nav-item" type="button" data-view="personas">
+        <span class="nav-icon">♙</span>
+        Personas registradas
+      </button>
+
+      <button class="nav-item" type="button" data-view="habitaciones">
+        <span class="nav-icon">▦</span>
+        Vista de habitaciones
+      </button>
+
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="admin-info">
+        Sesión administrativa
       </div>
 
-      <p class="hint">
-        Pasa la tarjeta por el lector (será denegada) y presiona el botón.
-      </p>
+      <a href="logout.php" class="logout-button">
+        Cerrar sesión
+      </a>
+    </div>
 
-      <label for="foto">Foto (opcional)</label>
-      <input id="foto" type="file" accept="image/*">
+  </aside>
 
-      <p class="hint">La foto se guarda en la base de datos.</p>
+  <!-- ================= CONTENIDO ================= -->
 
-      <img id="preview" class="preview" alt="Vista previa" hidden>
+  <div class="main-area">
 
-      <div style="margin-top:16px">
-        <button class="primary" id="guardar" type="submit">Guardar</button>
+    <header class="topbar">
+
+      <h1 id="pageTitle">Estado actual</h1>
+
+      <div class="topbar-status">
+        <span id="conn" class="conn">Photon: conectando...</span>
+        <span id="dbconn" class="conn">Base de datos: conectando...</span>
       </div>
 
-      <div id="msg" class="msg" hidden></div>
-    </form>
+    </header>
+
+    <main class="content">
+
+      <div id="banner" class="banner" hidden></div>
+
+      <!-- ================= ESTADO ACTUAL ================= -->
+
+      <section class="view-section" id="view-inicio">
+
+        <div class="section-heading">
+          <h2>Estado actual</h2>
+          <p>Consulta el estado del sistema y la actividad más reciente.</p>
+        </div>
+
+        <div class="dashboard-grid">
+
+          <div class="card">
+            <h2>Estado del sistema</h2>
+
+            <div class="status">
+              <div class="item">
+                <div class="label">Estado</div>
+                <div class="value" id="ShowStatus">-</div>
+              </div>
+
+              <div class="item">
+                <div class="label">Último acceso</div>
+                <div class="value" id="ShowLast">-</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Información del sistema</h2>
+
+            <p class="hint">
+              Desde este panel puedes supervisar el funcionamiento
+              del lector NFC y la comunicación con la base de datos.
+            </p>
+
+            <p class="hint">
+              Los indicadores superiores muestran el estado de conexión
+              del Photon y MySQL.
+            </p>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ================= HISTORIAL ================= -->
+
+      <section class="view-section" id="view-historial" hidden>
+
+        <div class="section-heading">
+          <h2>Historial de accesos</h2>
+          <p>Consulta los registros de entrada y los intentos de acceso.</p>
+        </div>
+
+        <div class="card">
+
+          <input id="filtro" type="text"
+            placeholder="Buscar por nombre, UID, fecha o resultado"
+            style="margin-bottom:12px">
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Foto</th>
+                  <th>Nombre</th>
+                  <th>Fecha</th>
+                  <th>Hora</th>
+                  <th>Resultado</th>
+                </tr>
+              </thead>
+
+              <tbody id="logs"></tbody>
+            </table>
+          </div>
+
+          <p class="empty muted" id="vacioLogs" hidden>
+            Todavía no hay accesos registrados.
+          </p>
+
+          <p class="hint">
+            El historial se guarda en la base de datos MySQL.
+            La página copia a la base de datos los accesos que ve
+            en el Photon, así que debe estar abierta para registrarlos.
+          </p>
+
+        </div>
+
+      </section>
+
+      <!-- ================= REGISTRAR PERSONA ================= -->
+
+      <section class="view-section" id="view-registro" hidden>
+
+        <div class="section-heading">
+          <h2>Registrar persona</h2>
+          <p>Agrega una persona y vincula su tarjeta de acceso NFC.</p>
+        </div>
+
+        <div class="card">
+
+          <form id="form" autocomplete="off">
+
+            <label for="nombre">Nombre</label>
+            <input id="nombre" type="text" required>
+
+            <label for="uid">UID de la tarjeta</label>
+
+            <div class="row">
+              <input id="uid" type="text"
+                placeholder="Ej. 04A1B2C3" required>
+
+              <button class="secondary" id="usarUltima" type="button">
+                Usar última tarjeta desconocida
+              </button>
+            </div>
+
+            <p class="hint">
+              Pasa la tarjeta por el lector (será denegada)
+              y presiona el botón.
+            </p>
+
+            <label for="foto">Foto (opcional)</label>
+            <input id="foto" type="file" accept="image/*">
+
+            <p class="hint">La foto se guarda en la base de datos.</p>
+
+            <img id="preview" class="preview"
+              alt="Vista previa" hidden>
+
+            <div style="margin-top:16px">
+              <button class="primary" id="guardar" type="submit">
+                Guardar
+              </button>
+            </div>
+
+            <div id="msg" class="msg" hidden></div>
+
+          </form>
+
+        </div>
+
+      </section>
+
+      <!-- ================= PERSONAS REGISTRADAS ================= -->
+
+      <section class="view-section" id="view-personas" hidden>
+
+        <div class="section-heading">
+          <h2>Personas registradas</h2>
+          <p>Administra las personas que cuentan con una tarjeta NFC.</p>
+        </div>
+
+        <div class="card">
+
+          <div class="people" id="lista"></div>
+
+          <p class="empty muted" id="vacioPersonas" hidden>
+            Aún no hay personas registradas.
+          </p>
+
+        </div>
+
+      </section>
+
+      <!-- ================= HABITACIONES ================= -->
+
+      <section class="view-section" id="view-habitaciones" hidden>
+
+        <div class="section-heading">
+          <h2>Vista general de habitaciones</h2>
+          <p>Consulta y administra la información de las habitaciones del hotel.</p>
+        </div>
+
+        <div class="rooms-placeholder">
+
+          <div class="room-icon">▦</div>
+
+          <h3>Gestión de habitaciones</h3>
+
+          <p>
+            Este apartado está preparado para incorporar la vista
+            general de los cuartos, su información y sus respectivos
+            estados de ocupación.
+          </p>
+
+        </div>
+
+      </section>
+
+    </main>
+
   </div>
 
-  <div class="card">
-    <h2>Personas registradas</h2>
-    <div class="people" id="lista"></div>
-    <p class="empty muted" id="vacioPersonas" hidden>
-      Aún no hay personas registradas.
-    </p>
-  </div>
-</main>
+</div>
 
 <script>
+// ============================================================
+// NAVEGACIÓN DEL SIDEBAR
+// ============================================================
+
+var viewTitles = {
+  inicio: "Estado actual",
+  historial: "Historial de accesos",
+  registro: "Registrar persona",
+  personas: "Personas registradas",
+  habitaciones: "Vista general de habitaciones"
+};
+
+document.querySelectorAll(".nav-item").forEach(function (button) {
+
+  button.addEventListener("click", function () {
+
+    var view = this.dataset.view;
+
+    document.querySelectorAll(".nav-item").forEach(function (item) {
+      item.classList.remove("active");
+    });
+
+    this.classList.add("active");
+
+    document.querySelectorAll(".view-section").forEach(function (section) {
+      section.hidden = true;
+    });
+
+    var selected = document.getElementById("view-" + view);
+
+    if (selected) {
+      selected.hidden = false;
+    }
+
+    document.getElementById("pageTitle").textContent =
+      viewTitles[view] || "Panel administrativo";
+
+  });
+
+});
+
 // ============================================================
 // CONFIGURACIÓN: token y ID de tu Photon
 // ============================================================

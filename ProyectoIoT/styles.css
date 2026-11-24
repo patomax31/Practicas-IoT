@@ -1,19 +1,28 @@
 
-/* ==============================
-   VARIABLES GENERALES
-============================== */
+/* ==================================================
+   1. VARIABLES GENERALES
+================================================== */
 
 :root {
-    --bg: #f5f6f8;
-    --card: #fff;
-    --text: #1d2330;
-    --muted: #667085;
-    --line: #e4e7ec;
-    --accent: #3b5bdb;
+    --bg: #f4f6f7;
+    --card: #ffffff;
+    --text: #263638;
+    --muted: #788586;
+    --line: #e5e9e8;
+
+    --accent: #304b4b;
+    --accent-dark: #203a3b;
+    --accent-light: #e9f0ed;
+
+    --gold: #b49766;
+
     --ok: #1a7f4b;
     --okbg: #e3f6ec;
+
     --no: #b42318;
     --nobg: #fdeceb;
+
+    --shadow: 0 4px 18px rgba(32, 58, 59, 0.06);
 }
 
 * {
@@ -24,255 +33,475 @@
     display: none !important;
 }
 
-/* ==============================
-   ESTILOS GENERALES
-============================== */
+/* ==================================================
+   2. ESTILOS GENERALES
+================================================== */
 
 body {
     margin: 0;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
     background: var(--bg);
     color: var(--text);
 }
 
-header {
-    background: var(--card);
-    border-bottom: 1px solid var(--line);
-    padding: 14px 20px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    align-items: center;
-    justify-content: space-between;
-}
-
 h1 {
-    font-size: 18px;
+    font-size: 21px;
     margin: 0;
-    font-weight: 600;
+    font-weight: 650;
+    letter-spacing: 0.2px;
 }
 
 h2 {
-    font-size: 16px;
-    margin: 0 0 12px;
-    font-weight: 600;
+    font-size: 17px;
+    margin: 0 0 20px;
+    font-weight: 650;
+    color: #304b4b;
 }
 
 main {
-    max-width: 960px;
+    width: 100%;
+    max-width: 1180px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 30px 24px 45px;
 }
 
-/* ==============================
-   TARJETAS
-============================== */
+/* ==================================================
+   3. ENCABEZADO DEL PANEL
+================================================== */
+
+header {
+    min-height: 76px;
+    background: linear-gradient(115deg, #203a3b, #304b4b 65%, #405b55);
+    border-bottom: 3px solid var(--gold);
+    padding: 16px 30px;
+
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+    justify-content: space-between;
+
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.09);
+}
+
+header h1 {
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+header h1::before {
+    content: "⌂";
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.12);
+    color: #e3c995;
+    font-size: 25px;
+}
+
+header > div {
+    align-items: center;
+}
+
+/* ==================================================
+   4. ESTADOS DE CONEXIÓN
+================================================== */
+
+.conn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    padding: 8px 12px;
+    border-radius: 8px;
+
+    background: rgba(248, 234, 230, 0.95);
+    color: #a04436;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.conn::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.conn.on {
+    background: rgba(227, 246, 236, 0.95);
+    color: #1a7f4b;
+}
+
+/* ==================================================
+   5. BOTÓN CERRAR SESIÓN
+================================================== */
+
+.logout-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 10px 16px;
+    border-radius: 8px;
+
+    background: #dc2626;
+    color: #ffffff;
+
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+
+    border: 1px solid rgba(255, 255, 255, 0.15);
+
+    transition: background 0.2s, transform 0.2s;
+}
+
+.logout-button:hover {
+    background: #b91c1c;
+    transform: translateY(-1px);
+}
+
+/* ==================================================
+   6. TARJETAS GENERALES
+================================================== */
 
 .card {
     background: var(--card);
     border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 20px;
+    border-radius: 14px;
+
+    padding: 24px;
+    margin-bottom: 22px;
+
+    box-shadow: var(--shadow);
+    transition: box-shadow 0.2s;
 }
 
-/* ==============================
-   CONEXIÓN
-============================== */
-
-.conn {
-    font-size: 13px;
-    padding: 4px 10px;
-    border-radius: 999px;
-    background: var(--nobg);
-    color: var(--no);
+.card:hover {
+    box-shadow: 0 6px 22px rgba(32, 58, 59, 0.09);
 }
 
-.conn.on {
-    background: var(--okbg);
-    color: var(--ok);
+.card h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--line);
 }
 
-/* ==============================
-   BANNERS Y ESTADOS
-============================== */
-
-.banner {
-    background: var(--nobg);
-    color: var(--no);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 12px 16px;
-    margin-bottom: 20px;
-    font-size: 14px;
+.card h2::before {
+    content: "";
+    width: 4px;
+    height: 19px;
+    background: var(--gold);
+    border-radius: 5px;
 }
+
+/* ==================================================
+   7. ESTADO ACTUAL
+================================================== */
 
 .status {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 24px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.status .item {
+    padding: 20px;
+    border: 1px solid #e8ece9;
+    border-radius: 11px;
+    background: #f8faf9;
+    min-width: 0;
 }
 
 .status .item .label {
     font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
     color: var(--muted);
+    margin-bottom: 10px;
 }
 
 .status .item .value {
-    font-size: 22px;
-    font-weight: 600;
+    font-size: 21px;
+    font-weight: 650;
+    color: #304b4b;
+    overflow-wrap: anywhere;
 }
 
-/* ==============================
-   FORMULARIOS GENERALES
-============================== */
+/* ==================================================
+   8. BANNERS Y MENSAJES
+================================================== */
 
-label {
-    display: block;
-    font-size: 13px;
-    color: var(--muted);
-    margin: 12px 0 4px;
-}
-
-input[type="text"] {
-    width: 100%;
-    padding: 9px 11px;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    font-size: 15px;
-    background: #fff;
-    color: var(--text);
-}
-
-.row {
-    display: flex;
-    gap: 8px;
-}
-
-.row input {
-    flex: 1;
-}
-
-/* ==============================
-   BOTONES GENERALES
-============================== */
-
-button.primary {
-    background: var(--accent);
-    color: #fff;
-    border: 0;
-    padding: 10px 16px;
-    border-radius: 8px;
-    font-size: 15px;
-    cursor: pointer;
-}
-
-button.secondary {
-    background: #fff;
-    color: var(--text);
-    border: 1px solid var(--line);
-    padding: 9px 12px;
-    border-radius: 8px;
-    font-size: 14px;
-    cursor: pointer;
-    white-space: nowrap;
-}
-
-button.danger {
-    background: #fff;
+.banner {
+    background: var(--nobg);
     color: var(--no);
-    border: 1px solid var(--line);
-    padding: 6px 10px;
-    border-radius: 8px;
-    font-size: 13px;
-    cursor: pointer;
-}
+    border: 1px solid #f0d1cc;
+    border-radius: 11px;
 
-button:disabled {
-    opacity: .6;
-    cursor: default;
-}
+    padding: 15px 18px;
+    margin-bottom: 22px;
 
-/* ==============================
-   MENSAJES Y TEXTOS
-============================== */
-
-.hint {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 4px;
+    font-size: 14px;
+    line-height: 1.5;
 }
 
 .msg {
-    margin-top: 12px;
+    margin-top: 14px;
     font-size: 14px;
-    padding: 8px 10px;
-    border-radius: 8px;
+    padding: 12px 14px;
+    border-radius: 9px;
 }
 
 .msg.ok {
     background: var(--okbg);
     color: var(--ok);
+    border: 1px solid #c7ead5;
 }
 
 .msg.err {
     background: var(--nobg);
     color: var(--no);
+    border: 1px solid #f0d1cc;
 }
 
 .muted {
     color: var(--muted);
 }
 
-/* ==============================
-   TABLAS
-============================== */
+/* ==================================================
+   9. FORMULARIOS
+================================================== */
+
+label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #475653;
+    margin: 15px 0 7px;
+}
+
+input[type="text"],
+input[type="file"],
+input[type="password"],
+input[type="email"] {
+    width: 100%;
+    min-width: 0;
+
+    padding: 12px 13px;
+
+    border: 1px solid #dce2df;
+    border-radius: 9px;
+
+    font-family: inherit;
+    font-size: 14px;
+
+    background: #ffffff;
+    color: var(--text);
+
+    outline: none;
+
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="text"]:focus,
+input[type="file"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(180, 151, 102, 0.13);
+}
+
+input::placeholder {
+    color: #a0aaa8;
+}
+
+.row {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+}
+
+.row input {
+    flex: 1;
+    min-width: 0;
+}
+
+.hint {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-top: 8px;
+}
+
+/* ==================================================
+   10. BOTONES
+================================================== */
+
+button {
+    font-family: inherit;
+    transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+button.primary {
+    background: var(--accent);
+    color: #ffffff;
+
+    border: none;
+    padding: 12px 20px;
+    border-radius: 9px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+button.primary:hover {
+    background: var(--accent-dark);
+    box-shadow: 0 4px 12px rgba(32, 58, 59, 0.16);
+    transform: translateY(-1px);
+}
+
+button.secondary {
+    background: #ffffff;
+    color: #405653;
+
+    border: 1px solid #dce3df;
+    padding: 11px 14px;
+    border-radius: 9px;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+button.secondary:hover {
+    background: #edf3ef;
+    border-color: #b9c9c1;
+}
+
+button.danger {
+    background: #fff5f4;
+    color: #b42318;
+
+    border: 1px solid #f0d4d0;
+    padding: 8px 12px;
+    border-radius: 8px;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+button.danger:hover {
+    background: #fde8e5;
+    border-color: #e8bdb6;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: default;
+    transform: none;
+}
+
+/* ==================================================
+   11. HISTORIAL Y TABLAS
+================================================== */
 
 .table-wrap {
+    width: 100%;
     overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 10px;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 14px;
+    font-size: 13px;
+    background: #ffffff;
+}
+
+thead {
+    background: #f1f5f2;
 }
 
 th {
     text-align: left;
-    font-weight: 500;
-    color: var(--muted);
-    font-size: 12px;
-    padding: 8px 10px;
-    border-bottom: 1px solid var(--line);
+    font-weight: 650;
+    color: #526461;
+
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    padding: 14px 13px;
+    border-bottom: 1px solid #e0e7e2;
+
     white-space: nowrap;
 }
 
 td {
-    padding: 8px 10px;
-    border-bottom: 1px solid var(--line);
+    padding: 12px 13px;
+    border-bottom: 1px solid #edf0ee;
     vertical-align: middle;
     white-space: nowrap;
+    color: #475653;
+}
+
+tbody tr {
+    transition: background 0.15s;
+}
+
+tbody tr:hover {
+    background: #f8faf9;
 }
 
 tr:last-child td {
     border-bottom: 0;
 }
 
-/* ==============================
-   AVATARES
-============================== */
+td code {
+    display: inline-block;
+    margin-top: 4px;
+}
+
+/* ==================================================
+   12. AVATARES
+================================================== */
 
 .avatar {
     width: 44px;
     height: 44px;
+    min-width: 44px;
+
     border-radius: 50%;
-    background: #e8ebf5;
-    color: var(--accent);
+    background: #e9e5da;
+    color: #304b4b;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600;
+
+    font-size: 15px;
+    font-weight: 700;
+
     overflow: hidden;
     flex: none;
 }
@@ -283,16 +512,21 @@ tr:last-child td {
     object-fit: cover;
 }
 
-/* ==============================
-   INSIGNIAS
-============================== */
+/* ==================================================
+   13. INSIGNIAS DE ACCESO
+================================================== */
 
 .badge {
-    display: inline-block;
-    padding: 3px 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 6px 11px;
     border-radius: 999px;
-    font-size: 12px;
-    font-weight: 500;
+
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
 }
 
 .badge.ok {
@@ -305,23 +539,36 @@ tr:last-child td {
     color: var(--no);
 }
 
-/* ==============================
-   PERSONAS
-============================== */
+/* ==================================================
+   14. PERSONAS REGISTRADAS
+================================================== */
 
 .people {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 12px;
+    gap: 14px;
 }
 
 .person {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 13px;
+
+    min-width: 0;
+
     border: 1px solid var(--line);
     border-radius: 12px;
-    padding: 12px;
+
+    padding: 15px;
+    background: #ffffff;
+
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+.person:hover {
+    border-color: #c7d5ce;
+    box-shadow: 0 4px 13px rgba(32, 58, 59, 0.07);
+    transform: translateY(-2px);
 }
 
 .person .info {
@@ -330,48 +577,68 @@ tr:last-child td {
 }
 
 .person .name {
-    font-weight: 500;
+    font-size: 14px;
+    font-weight: 650;
+    color: #304b4b;
+
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-/* ==============================
-   PREVISUALIZACIÓN DE FOTOS
-============================== */
-
-.preview {
-    width: 96px;
-    height: 96px;
-    border-radius: 12px;
-    object-fit: cover;
-    margin-top: 8px;
-    border: 1px solid var(--line);
+.person .info code {
+    display: block;
+    margin-top: 5px;
+    overflow-wrap: anywhere;
 }
 
-/* ==============================
-   OTROS ELEMENTOS
-============================== */
+.person .warn {
+    margin-top: 9px;
+}
+
+/* ==================================================
+   15. PREVISUALIZACIÓN DE FOTOS
+================================================== */
+
+.preview {
+    width: 105px;
+    height: 105px;
+
+    border-radius: 12px;
+    object-fit: cover;
+
+    margin-top: 12px;
+
+    border: 2px solid #e3e9e5;
+    background: #f4f6f5;
+}
+
+/* ==================================================
+   16. OTROS ELEMENTOS
+================================================== */
 
 code {
     font-family: ui-monospace, Menlo, Consolas, monospace;
-    font-size: 12px;
+    font-size: 11px;
+    color: #778582;
 }
 
 .empty {
     text-align: center;
-    padding: 24px;
+    padding: 30px 20px;
+    color: var(--muted);
+    font-size: 14px;
 }
 
 .warn {
     font-size: 12px;
-    color: var(--no);
-    margin-top: 2px;
+    color: #a04436;
+    line-height: 1.5;
 }
 
-/* ==============================
-   LOGIN - DISEÑO HOTELERO
-============================== */
+/* ==================================================
+   17. LOGIN - DISEÑO HOTELERO
+================================================== */
 
 .auth-page {
     min-height: 100vh;
@@ -411,8 +678,6 @@ code {
     overflow: hidden;
 }
 
-/* Detalle decorativo superior */
-
 .auth-card::before {
     content: "";
     position: absolute;
@@ -428,8 +693,6 @@ code {
         #a88959
     );
 }
-
-/* Icono del hotel */
 
 .auth-icon {
     width: 76px;
@@ -447,8 +710,6 @@ code {
     font-size: 36px;
 }
 
-/* Título */
-
 .auth-card h1 {
     color: #263d3e;
     text-align: center;
@@ -461,19 +722,13 @@ code {
     margin: 0 0 10px;
 }
 
-/* Descripción */
-
 .auth-description {
     color: #77766e;
     text-align: center;
-
     font-size: 14px;
     line-height: 1.6;
-
     margin: 0 0 30px;
 }
-
-/* Formulario */
 
 .auth-card form {
     display: flex;
@@ -481,16 +736,12 @@ code {
     gap: 10px;
 }
 
-/* Etiquetas */
-
 .auth-card label {
     color: #475653;
     font-size: 13px;
     font-weight: 600;
     margin: 8px 0 2px;
 }
-
-/* Campos de entrada */
 
 .auth-card input {
     width: 100%;
@@ -505,9 +756,7 @@ code {
     font-size: 15px;
     outline: none;
 
-    transition:
-        border-color 0.2s,
-        box-shadow 0.2s;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .auth-card input::placeholder {
@@ -518,8 +767,6 @@ code {
     border-color: #a88959;
     box-shadow: 0 0 0 3px rgba(168, 137, 89, 0.13);
 }
-
-/* Botón de acceso */
 
 .auth-button {
     width: 100%;
@@ -538,10 +785,7 @@ code {
 
     cursor: pointer;
 
-    transition:
-        background 0.2s,
-        transform 0.2s,
-        box-shadow 0.2s;
+    transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
 }
 
 .auth-button:hover {
@@ -553,8 +797,6 @@ code {
 .auth-button:active {
     transform: translateY(0);
 }
-
-/* Mensajes de error */
 
 .auth-error {
     padding: 12px 14px;
@@ -570,8 +812,6 @@ code {
     text-align: center;
 }
 
-/* Pie del formulario */
-
 .auth-footer {
     margin-top: 28px;
     padding-top: 18px;
@@ -584,35 +824,112 @@ code {
     letter-spacing: 0.2px;
 }
 
-/* ==============================
-   CERRAR SESIÓN
-============================== */
+/* ==================================================
+   18. RESPONSIVE - TABLETS Y MÓVILES
+================================================== */
 
-.logout-button {
-    display: inline-block;
-    padding: 10px 15px;
+@media (max-width: 768px) {
 
-    border: 1px solid #e5d5d0;
-    border-radius: 8px;
+    header {
+        padding: 15px 18px;
+        align-items: flex-start;
+    }
 
-    background: #f8eeeb;
-    color: #9e493d;
+    header h1 {
+        font-size: 18px;
+    }
 
-    text-decoration: none;
-    font-size: 14px;
+    header > div {
+        width: 100%;
+    }
 
-    transition: background 0.2s;
+    main {
+        padding: 22px 16px 35px;
+    }
+
+    .card {
+        padding: 19px;
+    }
+
+    .status {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .status .item {
+        padding: 16px;
+    }
+
+    .row {
+        flex-direction: column;
+    }
+
+    .row button {
+        width: 100%;
+        white-space: normal;
+    }
+
+    .people {
+        grid-template-columns: 1fr;
+    }
+
+    .person {
+        flex-wrap: wrap;
+    }
+
+    .table-wrap {
+        border-radius: 8px;
+    }
+
 }
-
-.logout-button:hover {
-    background: #f1ded8;
-}
-
-/* ==============================
-   DISEÑO RESPONSIVE
-============================== */
 
 @media (max-width: 480px) {
+
+    header {
+        padding: 14px;
+    }
+
+    header h1 {
+        font-size: 16px;
+    }
+
+    header h1::before {
+        width: 33px;
+        height: 33px;
+        font-size: 22px;
+    }
+
+    header > div {
+        gap: 7px !important;
+    }
+
+    .conn {
+        font-size: 11px;
+        padding: 7px 9px;
+    }
+
+    .logout-button {
+        padding: 8px 11px;
+        font-size: 12px;
+    }
+
+    main {
+        padding: 17px 12px 30px;
+    }
+
+    .card {
+        padding: 16px;
+        margin-bottom: 16px;
+        border-radius: 11px;
+    }
+
+    .card h2 {
+        font-size: 15px;
+    }
+
+    .status .item .value {
+        font-size: 19px;
+    }
 
     .auth-page {
         padding: 16px;
