@@ -275,6 +275,328 @@ if (empty($_SESSION['admin_id'])) {
       font-size: 14px;
     }
 
+    /* ---------- CROQUIS DE HABITACIONES ---------- */
+
+    .rooms-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: #4b5b5f;
+    }
+
+    .rooms-legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .rooms-legend i {
+      width: 26px;
+      height: 14px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+
+    .rooms-scroll {
+      overflow-x: auto;
+      padding-bottom: 10px;
+    }
+
+    .rooms-plan {
+      min-width: 860px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 70px 1fr 1fr;
+      grid-template-rows: 235px 78px 235px;
+      gap: 7px;
+      padding: 7px;
+      background: #111;
+      border-radius: 4px;
+    }
+
+    .room {
+      position: relative;
+      border: 0;
+      padding: 0;
+      background: #c0925a;
+      cursor: pointer;
+      overflow: hidden;
+      text-align: left;
+      font-family: inherit;
+      transition: filter .15s, transform .15s;
+    }
+
+    .room:hover { filter: brightness(1.08); }
+    .room.selected { outline: 4px solid #d6bd8c; outline-offset: -4px; }
+
+    .room .num {
+      position: absolute;
+      right: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #3e2a12;
+      background: rgba(255,255,255,.55);
+      padding: 3px 9px;
+      border-radius: 5px;
+    }
+
+    .room .bed {
+      position: absolute;
+      left: 10px;
+      width: 38%;
+      height: 46%;
+      background: #f4a766;
+      border: 2px solid #d38a4a;
+      border-radius: 3px;
+    }
+
+    .room .bed::before {
+      content: "";
+      position: absolute;
+      left: 0; right: 0;
+      height: 38%;
+      background: #fbf4ea;
+    }
+
+    .room .bed::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      width: 34%;
+      height: 18%;
+      transform: translateX(-50%);
+      background: #f4a766;
+      border: 1px solid #d38a4a;
+      border-radius: 3px;
+    }
+
+    .room .bath {
+      position: absolute;
+      right: 10px;
+      width: 31%;
+      height: 40%;
+      background: #f3f6f7;
+      border: 4px solid #111;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 8px;
+    }
+
+    .room .bath::before {
+      content: "";
+      width: 16px;
+      height: 22px;
+      border: 2px solid #777;
+      border-radius: 50% 50% 45% 45%;
+      background: #fff;
+    }
+
+    .room .bath::after {
+      content: "";
+      width: 36%;
+      height: 100%;
+      margin-right: -8px;
+      background: #cfe3ec;
+      border-left: 2px solid #8fb1c0;
+    }
+
+    .room .status-rect {
+      position: absolute;
+      left: 10px;
+      width: calc(69% - 30px);
+      min-width: 110px;
+      padding: 9px 6px;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 12.5px;
+      font-weight: 800;
+      letter-spacing: .6px;
+      color: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,.3);
+    }
+
+    .st-ocupado    { background: #dc2626; }
+    .st-desocupado { background: #16a34a; }
+    .st-no_molestar{ background: #6b7280; }
+
+    /* Fila superior: cama arriba, baño abajo */
+    .room.top .num { top: 12px; }
+    .room.top .bed { top: 10px; }
+    .room.top .bed::before { top: 0; }
+    .room.top .bed::after  { top: 6%; }
+    .room.top .bath { bottom: 10px; }
+    .room.top .status-rect { bottom: 12px; }
+
+    /* Fila inferior: espejo */
+    .room.bottom .num { bottom: 12px; }
+    .room.bottom .bed { bottom: 10px; }
+    .room.bottom .bed::before { bottom: 0; }
+    .room.bottom .bed::after  { bottom: 6%; }
+    .room.bottom .bath { top: 10px; }
+    .room.bottom .status-rect { top: 12px; }
+
+    .plan-wall { background: #111; }
+
+    .plan-corridor {
+      grid-column: 1 / -1;
+      background: #fbf8ee;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #b7ad94;
+      font-size: 12px;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      background-image:
+        linear-gradient(#e9e4d3 1px, transparent 1px),
+        linear-gradient(90deg, #e9e4d3 1px, transparent 1px);
+      background-size: 38px 38px;
+    }
+
+    .plan-stem {
+      grid-column: 3;
+      grid-row: 3;
+      background: #fbf8ee;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 8px;
+      color: #8a7f63;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      background-image:
+        linear-gradient(#e9e4d3 1px, transparent 1px),
+        linear-gradient(90deg, #e9e4d3 1px, transparent 1px);
+      background-size: 38px 38px;
+    }
+
+    /* ---------- SIDEBAR DE HISTORIAL DE HABITACIÓN ---------- */
+
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10,25,30,.4);
+      z-index: 90;
+    }
+
+    .room-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 400px;
+      max-width: 100%;
+      background: #fff;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      box-shadow: -8px 0 30px rgba(0,0,0,.2);
+      transform: translateX(100%);
+      transition: transform .25s ease;
+    }
+
+    .room-drawer.open { transform: translateX(0); }
+
+    .drawer-head {
+      padding: 20px 22px;
+      background: #172e35;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .drawer-head h3 { margin: 0; font-size: 19px; }
+
+    .drawer-close {
+      border: 0;
+      background: rgba(255,255,255,.12);
+      color: #fff;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .drawer-body { padding: 20px 22px; overflow-y: auto; flex: 1; }
+
+    .drawer-current {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      font-size: 13px;
+      color: #4b5b5f;
+    }
+
+    .drawer-current .status-pill {
+      color: #fff;
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: .6px;
+      padding: 6px 12px;
+      border-radius: 6px;
+    }
+
+    .state-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+
+    .state-buttons button {
+      border: 0;
+      border-radius: 7px;
+      padding: 9px 4px;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      opacity: .85;
+    }
+
+    .state-buttons button:hover { opacity: 1; }
+
+    .drawer-body h4 {
+      margin: 0 0 12px;
+      color: #263f43;
+      font-size: 15px;
+    }
+
+    .timeline { list-style: none; margin: 0; padding: 0; }
+
+    .timeline li {
+      position: relative;
+      padding: 0 0 16px 22px;
+      border-left: 2px solid #e1e7e8;
+      margin-left: 6px;
+    }
+
+    .timeline li::before {
+      content: "";
+      position: absolute;
+      left: -7px;
+      top: 2px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--dot, #6b7280);
+      border: 2px solid #fff;
+    }
+
+    .timeline .t-state { font-weight: 700; font-size: 13px; color: #263f43; }
+    .timeline .t-who   { font-size: 13px; color: #4b5b5f; }
+    .timeline .t-when  { font-size: 12px; color: #8a979a; }
+
+    .drawer-empty { color: #8a979a; font-size: 14px; }
+
     /* ---------- RESPONSIVE ---------- */
 
     @media (max-width: 850px) {
@@ -591,18 +913,18 @@ if (empty($_SESSION['admin_id'])) {
           <p>Consulta y administra la información de las habitaciones del hotel.</p>
         </div>
 
-        <div class="rooms-placeholder">
+        <div class="rooms-legend">
+          <span><i class="st-ocupado"></i> OCUPADO</span>
+          <span><i class="st-desocupado"></i> DESOCUPADO</span>
+          <span><i class="st-no_molestar"></i> NO MOLESTAR</span>
+          <span style="margin-left:auto">Haz clic en una habitación para ver su historial.</span>
+        </div>
 
-          <div class="room-icon">▦</div>
-
-          <h3>Gestión de habitaciones</h3>
-
-          <p>
-            Este apartado está preparado para incorporar la vista
-            general de los cuartos, su información y sus respectivos
-            estados de ocupación.
-          </p>
-
+        <div class="rooms-scroll">
+          <div class="rooms-plan" id="roomsPlan">
+            <div class="plan-corridor">Pasillo</div>
+            <div class="plan-stem">Entrada</div>
+          </div>
         </div>
 
       </section>
@@ -612,6 +934,34 @@ if (empty($_SESSION['admin_id'])) {
   </div>
 
 </div>
+
+<!-- ================= SIDEBAR HISTORIAL DE HABITACIÓN ================= -->
+
+<div class="drawer-overlay" id="drawerOverlay" hidden></div>
+
+<aside class="room-drawer" id="roomDrawer" aria-hidden="true">
+  <div class="drawer-head">
+    <h3 id="drawerTitle">Habitación</h3>
+    <button class="drawer-close" id="drawerClose" type="button" aria-label="Cerrar">×</button>
+  </div>
+
+  <div class="drawer-body">
+    <div class="drawer-current">
+      <span>Estado actual</span>
+      <span class="status-pill" id="drawerStatus">-</span>
+    </div>
+
+    <div class="state-buttons">
+      <button type="button" class="st-ocupado" data-estado="ocupado">OCUPADO</button>
+      <button type="button" class="st-desocupado" data-estado="desocupado">DESOCUPADO</button>
+      <button type="button" class="st-no_molestar" data-estado="no_molestar">NO MOLESTAR</button>
+    </div>
+
+    <h4>Historial de la habitación</h4>
+    <ul class="timeline" id="roomHistory"></ul>
+    <p class="drawer-empty" id="roomHistoryEmpty" hidden>Esta habitación aún no tiene historial.</p>
+  </div>
+</aside>
 
 <script>
 // ============================================================
@@ -1184,6 +1534,200 @@ $("#form").addEventListener("submit", function (e) {
   });
 });
 
+// ---------- Habitaciones (croquis) ----------
+
+var ROOMS = [
+  { n: 101, row: "top",    col: 1 },
+  { n: 102, row: "top",    col: 2 },
+  { n: 103, row: "top",    col: 4 },
+  { n: 104, row: "top",    col: 5 },
+  { n: 105, row: "bottom", col: 1 },
+  { n: 106, row: "bottom", col: 2 },
+  { n: 107, row: "bottom", col: 4 },
+  { n: 108, row: "bottom", col: 5 }
+];
+
+var ESTADOS = {
+  ocupado:     { label: "OCUPADO",     cls: "st-ocupado",     color: "#dc2626" },
+  desocupado:  { label: "DESOCUPADO",  cls: "st-desocupado",  color: "#16a34a" },
+  no_molestar: { label: "NO MOLESTAR", cls: "st-no_molestar", color: "#6b7280" }
+};
+
+var roomStates = {};
+var currentRoom = null;
+
+function normEstado(e) {
+  e = String(e || "").toLowerCase().trim().replace(/\s+/g, "_");
+  return ESTADOS[e] ? e : "desocupado";
+}
+
+function buildRooms() {
+  var plan = $("#roomsPlan");
+
+  ROOMS.forEach(function (r) {
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "room " + r.row;
+    btn.id = "room-" + r.n;
+    btn.style.gridColumn = r.col;
+    btn.style.gridRow = r.row === "top" ? 1 : 3;
+
+    var num = document.createElement("div");
+    num.className = "num";
+    num.textContent = "Hab. " + r.n;
+
+    var bed = document.createElement("div");
+    bed.className = "bed";
+
+    var bath = document.createElement("div");
+    bath.className = "bath";
+
+    var st = document.createElement("div");
+    st.className = "status-rect";
+
+    btn.append(num, bed, bath, st);
+    btn.addEventListener("click", function () { openRoom(r.n); });
+
+    plan.appendChild(btn);
+  });
+
+  // Muro en la columna central de la fila superior
+  var wall = document.createElement("div");
+  wall.className = "plan-wall";
+  wall.style.gridColumn = 3;
+  wall.style.gridRow = 1;
+  plan.appendChild(wall);
+
+  paintRooms();
+}
+
+function paintRooms() {
+  ROOMS.forEach(function (r) {
+    var e = ESTADOS[normEstado(roomStates[r.n])];
+    var el = $("#room-" + r.n + " .status-rect");
+    el.className = "status-rect " + e.cls;
+    el.textContent = e.label;
+  });
+
+  if (currentRoom) paintDrawerStatus();
+}
+
+function loadRooms() {
+  return api("a=rooms").then(function (rows) {
+    (rows || []).forEach(function (x) {
+      roomStates[x.numero] = normEstado(x.estado);
+    });
+    paintRooms();
+  }).catch(function (err) {
+    console.error("Habitaciones:", err);
+  });
+}
+
+function paintDrawerStatus() {
+  var e = ESTADOS[normEstado(roomStates[currentRoom])];
+  var pill = $("#drawerStatus");
+  pill.textContent = e.label;
+  pill.style.background = e.color;
+}
+
+function openRoom(n) {
+  currentRoom = n;
+
+  document.querySelectorAll(".room").forEach(function (r) {
+    r.classList.toggle("selected", r.id === "room-" + n);
+  });
+
+  $("#drawerTitle").textContent = "Habitación " + n;
+  paintDrawerStatus();
+
+  $("#drawerOverlay").hidden = false;
+  $("#roomDrawer").classList.add("open");
+  $("#roomDrawer").setAttribute("aria-hidden", "false");
+
+  loadRoomHistory(n);
+}
+
+function closeRoom() {
+  currentRoom = null;
+
+  document.querySelectorAll(".room.selected").forEach(function (r) {
+    r.classList.remove("selected");
+  });
+
+  $("#drawerOverlay").hidden = true;
+  $("#roomDrawer").classList.remove("open");
+  $("#roomDrawer").setAttribute("aria-hidden", "true");
+}
+
+function loadRoomHistory(n) {
+  var ul = $("#roomHistory");
+  var empty = $("#roomHistoryEmpty");
+
+  ul.replaceChildren();
+  empty.hidden = true;
+
+  api("a=room_history&room=" + encodeURIComponent(n)).then(function (rows) {
+    if (currentRoom !== n) return;
+
+    empty.textContent = "Esta habitación aún no tiene historial.";
+    empty.hidden = rows.length > 0;
+
+    rows.forEach(function (h) {
+      var e = ESTADOS[normEstado(h.estado)];
+
+      var li = document.createElement("li");
+      li.style.setProperty("--dot", e.color);
+
+      var st = document.createElement("div");
+      st.className = "t-state";
+      st.textContent = e.label;
+
+      var who = document.createElement("div");
+      who.className = "t-who";
+      who.textContent = h.nombre || "Sin persona asociada";
+
+      var when = document.createElement("div");
+      when.className = "t-when";
+      when.textContent = validTime(h.ts)
+        ? fmtDate(h.ts) + " · " + fmtTime(h.ts)
+        : "-";
+
+      li.append(st, who, when);
+      ul.appendChild(li);
+    });
+  }).catch(function (err) {
+    empty.textContent = "No se pudo cargar el historial: " + err.message;
+    empty.hidden = false;
+  });
+}
+
+function setRoomState(estado) {
+  if (!currentRoom) return;
+  var n = currentRoom;
+
+  api("a=room_state", "POST", { room: n, estado: estado })
+    .then(function () {
+      roomStates[n] = estado;
+      paintRooms();
+      loadRoomHistory(n);
+    })
+    .catch(function (err) {
+      alert("No se pudo cambiar el estado: " + err.message);
+    });
+}
+
+document.querySelectorAll(".state-buttons button").forEach(function (b) {
+  b.addEventListener("click", function () { setRoomState(this.dataset.estado); });
+});
+
+$("#drawerClose").addEventListener("click", closeRoom);
+$("#drawerOverlay").addEventListener("click", closeRoom);
+document.addEventListener("keydown", function (e) {
+  if (e.key === "Escape") closeRoom();
+});
+
+buildRooms();
+
 // ---------- Inicio ----------
 
 if (token === "PON_AQUI_TU_TOKEN") {
@@ -1198,13 +1742,14 @@ if (token === "PON_AQUI_TU_TOKEN") {
 
 refreshDb();
 updatePhoton();
+loadRooms();
 
 setInterval(function () {
   if (!document.hidden) updatePhoton();
 }, 2000);
 
 setInterval(function () {
-  if (!document.hidden) refreshDb();
+  if (!document.hidden) { refreshDb(); loadRooms(); }
 }, 15000);
 
 </script>
